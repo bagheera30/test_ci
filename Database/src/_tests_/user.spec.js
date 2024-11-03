@@ -1,18 +1,26 @@
 // users.service.test.js
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { PrismaClient } from '@prisma/client';
-const {
-  createUser,
-  loginUser,
-  editUsersByName,
-  getUser,
-  getAllUsers,
-} = require("../users/users.service");
 
 // Mock PrismaClient
-jest.mock("@prisma/client");
-const prisma = new PrismaClient();
+jest.mock("@prisma/client", () => {
+  const mPrismaClient = {
+    Users: {
+      update: jest.fn(),
+      // Add other methods that are used in your service
+    },
+  };
+  return { PrismaClient: jest.fn(() => mPrismaClient) };
+});
+
+const { PrismaClient } = require("@prisma/client");
+const {
+  createUser ,
+  loginUser ,
+  editUsersByName,
+  getUser ,
+  getAllUsers,
+} = require("../users/users.service");
 
 // Mock bcrypt
 jest.mock("bcrypt");
@@ -26,7 +34,7 @@ const jwtMock = require("jsonwebtoken");
 process.env.JWT_SECRET_KEY = "test-secret-key";
 
 // Mock user data
-const mockUser = {
+const mockUser  = {
   username: "testuser",
   password: "testpassword",
   role: "user",
@@ -55,7 +63,7 @@ describe("Users Service", () => {
     mockInsertUsers.mockReset();
     mockEditUsers.mockReset();
     mockFindAllUsers.mockReset();
-    prisma.Users.update.mockReset();
+    prisma.Users.update.mockReset(); // This should now work
   });
 
   describe("createUser", () => {
