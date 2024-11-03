@@ -68,19 +68,21 @@ describe("Users Service", () => {
         password: "hashedPassword",
       });
 
-      const result = await createUser (mockUser );
+      const result = await createUser(mockUser);
 
-      expect(bcryptMock.hash).toHaveBeenCalledWith(mockUser .password, 10);
-      expect(mockPrismaClient.Users.create).toHaveBeenCalledWith({
-        data: {
-          ...mockUser ,
-          password: "hashedPassword",
-        },
-      });
-      expect(result).toEqual({
-        ...mockUser ,
-        password: "hashedPassword",
-      });
+expect(bcryptMock.hash).toHaveBeenCalledWith(mockUser.password, 10);
+expect(mockPrismaClient.Users.create).toHaveBeenCalledWith({
+  data: {
+    ...mockUser,
+    password: "hashedPassword",
+    token: "test-token", // Tambahkan token
+  },
+});
+expect(result).toEqual({
+  ...mockUser,
+  password: "hashedPassword",
+  token: "test-token", // Tambahkan token
+});
     });
   });
 

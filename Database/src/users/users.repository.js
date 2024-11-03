@@ -4,10 +4,10 @@ const db = require("../libs/db");
 
 const prisma = db.getInstance();
 
-const fiindAllUsers = async () => {
-    const users = await prisma.Users.findMany();
+const findAllUsers = async () => {
+    const users = await prisma.users.findMany();
     return users;
-}
+  };
 
 const findUsersByUsername = async (username) => {
     const user = await prisma.Users.findUnique({
