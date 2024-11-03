@@ -8,6 +8,7 @@ import {
   getAllUsers,
 } from "../users/users.service";
 
+// Mock Prisma Client
 jest.mock("@prisma/client", () => {
   return {
     PrismaClient: jest.fn(() => ({
@@ -29,6 +30,7 @@ jest.mock("jsonwebtoken");
 
 process.env.JWT_SECRET_KEY = "test-secret-key";
 
+// Mock user data
 const mockUser = {
   username: "testuser",
   password: "testpassword",
@@ -37,11 +39,13 @@ const mockUser = {
   nomerWA: "1234567890",
 };
 
+// Mock functions
 const mockFindUsersByUsername = jest.fn();
 const mockInsertUsers = jest.fn();
 const mockEditUsers = jest.fn();
 const mockFindAllUsers = jest.fn();
 
+// Mock repository functions
 jest.mock("../users/users.repository", () => ({
   findUsersByUsername: mockFindUsersByUsername,
   insertUsers: mockInsertUsers,
