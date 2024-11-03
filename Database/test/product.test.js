@@ -11,7 +11,7 @@ const {
   insertProduct,
   deleteProduct,
   editProduct,
-} = require("../src/product/product.repository");
+} = require("../src/productproduct.repository");
 
 // Mock data for testing
 const mockProducts = [
@@ -33,7 +33,7 @@ const mockProducts = [
   },
 ];
 
-jest.mock("../src/product/product.repository.ts", () => ({
+jest.mock("../src/productproduct.repository", () => ({
   findProducts: jest.fn(() => Promise.resolve(mockProducts)),
   findProductById: jest.fn((id) =>
     Promise.resolve(mockProducts.find((p) => p.id === id))

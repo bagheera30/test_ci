@@ -34,7 +34,7 @@ const mockUsers = [
   },
 ];
 
-jest.mock("../src/users/users.repository.ts", () => ({
+jest.mock("../src/users/users.repository", () => ({
   findUsersByUsername: jest.fn((username) =>
     Promise.resolve(mockUsers.find((user) => user.username === username))
   ),
@@ -61,6 +61,15 @@ jest.mock("bcrypt", () => ({
 // Mock jwt for testing
 jest.mock("jsonwebtoken", () => ({
   sign: jest.fn((payload, secret) => Promise.resolve("mockToken")),
+}));
+
+// Mock Prisma (assuming you're using Prisma)
+jest.mock("../libs/db", () => ({
+  getInstance: jest.fn(() => ({
+    Users: {
+      update: jest.fn(),
+    },
+  })),
 }));
 
 describe("User Service", () => {
@@ -101,6 +110,10 @@ describe("User Service", () => {
       { userId: "1", role: "user" },
       "{process.env.JWT_SECRET_KEY}"
     );
+    expect(prisma.Users.update).toHaveBeenCalledWith({
+      where: { username: "userA" },
+      data: { token: "mockToken" },
+    });
   });
 
   it("should throw an error if user not found", async () => {
