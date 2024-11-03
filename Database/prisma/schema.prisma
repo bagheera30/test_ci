@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  userId    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String
+  username  String @unique
+  password  String
+  role      Role     @default(User)
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updateAt  DateTime @default(now()) @db.Timestamp(0)
+  nomerWA    String?
+  carts     cart[]
+  token     String?
+}
+
+model Products {
+  id        String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String
+  deskripsi String
+  image     String
+  price     Int
+  quantity  Int
+  products  CartItem[]
+}
+
+model cart {
+  id       String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId   String     @db.Uuid
+  date     DateTime
+  products CartItem[]
+  user     Users      @relation(fields: [userId], references: [userId])
+}
+
+model CartItem {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  productId String   @db.Uuid
+  quantity  Int
+  cartId    String   @db.Uuid
+  cart      cart     @relation(fields: [cartId], references: [id])
+  product   Products @relation(fields: [productId], references: [id])
+}
+
+enum Role {
+  User
+  Admin
+}

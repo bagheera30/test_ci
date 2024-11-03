@@ -78,6 +78,10 @@ jobs:
             echo "Waiting for Supabase..."
             sleep 5
           done
+      - name: generate prisma
+        run: |
+          cd Database
+          npx prisma generate
       - name: Push database
         run: |
           cd Database 
