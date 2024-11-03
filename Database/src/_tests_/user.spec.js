@@ -8,22 +8,6 @@ import {
   getAllUsers,
 } from "../users/users.service";
 
-// Mock Prisma Client
-jest.mock("@prisma/client", () => {
-  return {
-    PrismaClient: jest.fn(() => ({
-      Users: {
-        create: jest.fn(),
-        findUnique: jest.fn(),
-        update: jest.fn(),
-        findMany: jest.fn(),
-      },
-    })),
-  };
-});
-
-const mockPrismaClient = new (require("@prisma/client").PrismaClient)();
-
 // Mock bcrypt and jwt
 jest.mock("bcrypt");
 jest.mock("jsonwebtoken");
@@ -45,6 +29,20 @@ const mockInsertUsers = jest.fn();
 const mockEditUsers = jest.fn();
 const mockFindAllUsers = jest.fn();
 
+// Mock Prisma Client
+jest.mock("@prisma/client", () => {
+  return {
+    PrismaClient: jest.fn(() => ({
+      Users: {
+        create: jest.fn(),
+        findUnique: jest.fn(),
+        update: jest.fn(),
+        findMany: jest.fn(),
+      },
+    })),
+  };
+});
+
 // Mock repository functions
 jest.mock("../users/users.repository", () => ({
   findUsersByUsername: mockFindUsersByUsername,
@@ -54,6 +52,12 @@ jest.mock("../users/users.repository", () => ({
 }));
 
 describe("Users Service", () => {
+  let mockPrismaClient;
+
+  beforeAll(() => {
+    mockPrismaClient = new (require("@prisma/client").PrismaClient)();
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
     bcrypt.hash.mockReset();
