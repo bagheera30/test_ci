@@ -3,9 +3,9 @@ const jwt = require("jsonwebtoken");
 const {
   createUser,
   loginUser,
-  editUsersByname,
+  editUsersByName,
+  getUser,
   getAllUsers,
-  getuserByusername,
 } = require("../src/users/users.service");
 const {
   findUsersByUsername,
@@ -143,7 +143,7 @@ describe("User Service", () => {
       nomerWA: "081111111111",
     };
 
-    const editedUser = await editUsersByname(username, updatedUser);
+    const editedUser = await editUsersByName(username, updatedUser);
 
     expect(editedUser).toEqual({
       ...mockUsers[0],
@@ -158,7 +158,7 @@ describe("User Service", () => {
       name: "Updated User",
     };
 
-    await expect(editUsersByname(username, updatedUser)).rejects.toThrowError(
+    await expect(editUsersByName(username, updatedUser)).rejects.toThrowError(
       `User ${username} not found`
     );
     expect(findUsersByUsername).toHaveBeenCalledWith(username);
@@ -172,7 +172,7 @@ describe("User Service", () => {
 
   it("should get a user by username", async () => {
     const username = "userA";
-    const user = await getuserByusername(username);
+    const user = await getUser(username);
     expect(user).toEqual(mockUsers[0]);
     expect(findUsersByUsername).toHaveBeenCalledWith(username);
   });
