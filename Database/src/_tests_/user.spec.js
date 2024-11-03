@@ -97,6 +97,17 @@ describe("Users Service", () => {
 
       const result = await loginUser(mockUser.username, mockUser.password);
 
+      console.log(
+        "mockFindUsersByUsername calls:",
+        mockFindUsersByUsername.mock.calls
+      );
+      console.log("bcrypt.compare calls:", bcrypt.compare.mock.calls);
+      console.log("jwt.sign calls:", jwt.sign.mock.calls);
+      console.log(
+        "mockPrismaClient.Users.update calls:",
+        mockPrismaClient.Users.update.mock.calls
+      );
+
       expect(mockFindUsersByUsername).toHaveBeenCalledWith(mockUser.username);
       expect(bcrypt.compare).toHaveBeenCalledWith(
         mockUser.password,
