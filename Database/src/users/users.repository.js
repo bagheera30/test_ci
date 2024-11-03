@@ -9,7 +9,7 @@ const fiindAllUsers = async () => {
     return users;
 }
 
-const findUsersByUsername = async (username: string) => {
+const findUsersByUsername = async (username) => {
     const user = await prisma.Users.findUnique({
         where: {
             username: username,
@@ -19,7 +19,7 @@ const findUsersByUsername = async (username: string) => {
     return user;
 }
 
-const insertUsers = async (usersData: any) => {
+const insertUsers = async (usersData) => {
 
     const users = await prisma.Users.create({
         data: {
@@ -32,7 +32,7 @@ const insertUsers = async (usersData: any) => {
     });
     return users;
 }
-const editUsers = async (username: string, usersData: any) => {
+const editUsers = async (username, usersData) => {
     const users = await prisma.Users.update({
         where: {
             username,
