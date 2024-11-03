@@ -5,7 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "dev": "nodemon src/index.ts",
-    "test": "mocha 'test/**/*.test.ts'"
+    "test": "mocha 'test/**/*.test.ts'",
+    "push": "npx prisma db push"
   },
   "keywords": [],
   "author": "",
