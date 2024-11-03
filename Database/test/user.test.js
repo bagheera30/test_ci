@@ -1,6 +1,6 @@
 // tests/users.service.test.ts
 
-const bcrypt = require("bcrypt");
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import {
   createUser,
@@ -101,7 +101,7 @@ describe("User  Service", () => {
       };
       findUsersByUsername.mockResolvedValue(mockUser);
 
-      await expect(loginUser(username, "wrongPassword")).rejects.toThrow(
+      await expect(loginUser(username, "wrongPassword ")).rejects.toThrow(
         "Invalid password"
       );
     });

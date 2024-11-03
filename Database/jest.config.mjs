@@ -101,7 +101,15 @@ const config = {
   // notifyMode: "failure-change",
 
   // A preset that is used as a base for Jest's configuration
-  // preset: undefined,
+  preset: "ts-jest",
+  testEnvironment: "node",
+  moduleNameMapper: {
+    // If you have any module paths that need to be resolved, add them here
+  },
+  transform: {
+    "^.+\\.tsx?$": "ts-jest", // Transform TypeScript files
+  },
+  testPathIgnorePatterns: ["/node_modules/", "/dist/"],
 
   // Run tests from one or more projects
   // projects: undefined,
