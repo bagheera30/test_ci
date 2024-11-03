@@ -33,7 +33,7 @@ const mockProducts = [
   },
 ];
 
-jest.mock("../src/productproduct.repository", () => ({
+jest.mock("../src/product/product.repository", () => ({
   findProducts: jest.fn(() => Promise.resolve(mockProducts)),
   findProductById: jest.fn((id) =>
     Promise.resolve(mockProducts.find((p) => p.id === id))

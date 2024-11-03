@@ -64,7 +64,7 @@ jest.mock("jsonwebtoken", () => ({
 }));
 
 // Mock Prisma (assuming you're using Prisma)
-jest.mock("../libs/db", () => ({
+jest.mock("../src/libs/db.ts", () => ({
   getInstance: jest.fn(() => ({
     Users: {
       update: jest.fn(),
