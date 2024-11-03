@@ -75,7 +75,7 @@ describe("Users Service", () => {
       bcryptMock.hash.mockResolvedValue("hashedPassword");
       mockPrismaClient.Users.create.mockResolvedValue({
         ...mockUser ,
-        password: "hashedPassword",
+        password: "hashedPassword", // Ensure the password is hashed
       });
 
       // Act
@@ -86,7 +86,7 @@ describe("Users Service", () => {
       expect(mockPrismaClient.Users.create).toHaveBeenCalledWith({
         data: {
           ...mockUser ,
-          password: "hashedPassword",
+          password: "hashedPassword", // Ensure this matches the mock resolved value
         },
       });
       expect(result).toEqual({
@@ -139,7 +139,7 @@ describe("Users Service", () => {
       bcryptMock.compare.mockResolvedValue(false);
 
       // Act & Assert
-      await expect(loginUser (mockUser .username, mockUser .password)).rejects.toThrow("Invalid password");
+ await expect(loginUser (mockUser .username, mockUser .password)).rejects.toThrow("Invalid password");
     });
   });
 
