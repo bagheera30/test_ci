@@ -34,7 +34,7 @@ const mockUsers = [
   },
 ];
 
-jest.mock("./users.repository", () => ({
+jest.mock("../src/users/users.repository.ts", () => ({
   findUsersByUsername: jest.fn((username) =>
     Promise.resolve(mockUsers.find((user) => user.username === username))
   ),
