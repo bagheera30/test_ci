@@ -1,0 +1,17 @@
+---
+import Product from "../../components/ProductList/Product.tsx";
+import Layouts from "../../layouts/Layouts.astro";
+import { getApiResponse } from "../../libs/api-libs";
+import Foot from "../../components/header/Foot.astro";
+
+import { Icon } from "astro-icon";
+---
+
+<Layouts title="Produk">
+  <div class="">
+    <Product client:idle />
+  </div>
+</Layouts>
+<Foot />
+
+ ../../components/ProductList/ProductList.tsx

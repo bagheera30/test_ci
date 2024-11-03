@@ -1,0 +1,22 @@
+---
+import Layouts from "../../../layouts/Layouts.astro";
+
+import Nav from "../../../components/header/Nav.astro";
+import { Image } from "astro:assets";
+import { getApiResponseById, patchApiResponse } from "../../../libs/api-libs";
+import Foot from "../../../components/header/Foot.astro";
+
+import FormProduct from "../../../components/form/FormProduct.tsx";
+
+const { id } = Astro.params;
+
+const getProduct = await getApiResponseById("products", id);
+
+export const prerender = false;
+---
+
+<Layouts title="update data">
+  <Nav />
+
+  <FormProduct product={getProduct.data} client:load />
+</Layouts>

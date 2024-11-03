@@ -1,0 +1,15 @@
+---
+import ProductTable from "../components/ProductTable.astro";
+import Layouts from "../layouts/Layouts.astro";
+import { getApiResponse } from "../libs/api-libs";
+const product = await getApiResponse("products", "limit=10");
+---
+
+<Layouts title="Layouts">
+  <div class="flex justify-end">
+    <button class="btn btn-primary" onclick="location.href='/Products/add'"
+      >tambah</button
+    >
+  </div>
+  <ProductTable api={product} />
+</Layouts>

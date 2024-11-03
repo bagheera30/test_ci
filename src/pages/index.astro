@@ -1,0 +1,77 @@
+---
+import { Image } from "astro:assets";
+import { Icon } from "astro-icon";
+import Foot from "../components/header/Foot.astro";
+import Layouts from "../layouts/Layouts.astro";
+const title = "Home";
+// const token = localStorage.getItem("token");
+// if (token) {
+//   window.location.href = "/dasbord";
+// } else {
+//   window.location.href = "/login";
+// }
+---
+
+<Layouts title={title}>
+  <div class="bg-[#E5E5E5] h-auto">
+    <!-- navbar -->
+    <div class="navbar bg-[#496b63] bg-opacity-9 fixed">
+      <div class="flex-1">
+        <a
+          href="/"
+          class="btn btn-ghost normal-case md:text-3xl sm:text-xl text-lg text-white"
+          >MultiSellerSquare</a
+        >
+      </div>
+      <div class="flex md:gap-2 sm:gap-[2px] gap-0">
+        <div class="flex justify-between">
+          <a
+            href="/dasbord"
+            onclick="if (!localStorage.getItem('token')) { alert('Anda belum login!'); window.location.href = '/login'; return window.location.href = '/dasbord'; }"
+          >
+            <button class="btn rounded-3xl mx-2 md:w-32 sm:w-20 w-[68px]"
+              >Dasbord</button
+            ></a
+          >
+          <a href="/Products"
+            ><button class="btn rounded-3xl mx-2 w-32 h-10">Products</button></a
+          >
+        </div>
+
+        <div class="dropdown dropdown-end">
+          <label tabindex="0" class="btn btn-ghost btn-circle avatar">
+            <div class="w-24 rounded-full">
+              <Icon name="mdi:account-outline" class="text-gray-200" />
+            </div>
+          </label>
+          <ul
+            tabindex="0"
+            class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52"
+          >
+            <li>
+              <a class="justify-between" href="/login"> login</a>
+            </li>
+            <li><a href="/regiter">Register</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="px-32 py-32 justify-between">
+      <h2 class="text-8xl text-red-700 font-normal font-['Italianno'] my-5">
+        E-commerce
+      </h2>
+      <h3 class="text-6xl text-stone-800 font-normal font-['Italianno'] py-5">
+        Search.
+      </h3>
+      <h3 class="text-6xl text-stone-800 font-normal font-['Italianno'] py-5">
+        Buy. Arrived.
+      </h3>
+
+      <p class="text-stone-800 text-2xl font-normal font-['Roboto'] py-10">
+        Multi Seller Square adalah website <br />e-commerce yang dirancang untuk
+        mempermudah anda mencari produk apa saja yang anda inginkan.
+      </p>
+    </div>
+  </div>
+  <Foot />
+</Layouts>

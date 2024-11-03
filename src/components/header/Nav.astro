@@ -1,0 +1,56 @@
+---
+import { Icon } from "astro-icon";
+---
+
+<div class="navbar bg-[#496b63] bg-opacity-9">
+  <div class="flex-1">
+    <a href="/dasbord" class="btn btn-ghost normal-case text-3xl text-white"
+      >MultiSellerSquare</a
+    >
+  </div>
+  <div class="flex-none gap-2">
+    <div class="form-control w-96">
+      <input
+        type="text"
+        placeholder="Search"
+        class="input input-bordered w-24 md:w-auto"
+      />
+    </div>
+    <label tabindex="0" class="btn btn-ghost btn-circle avatar">
+      <div class="w-24 rounded-full">
+        <a href="/cart"
+          ><Icon name="ion:cart-outline" class="text-stone-300" /></a
+        >
+      </div>
+    </label>
+
+    <div class="dropdown dropdown-end">
+      <label tabindex="0" class="btn btn-ghost btn-circle avatar">
+        <div class="w-24 rounded-full">
+          <Icon name="mdi:account-outline" class="text-stone-300" />
+        </div>
+      </label>
+      <ul
+        tabindex="0"
+        class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52"
+      >
+        <li>
+          <a class="justify-between" href="/editProfile"> edit profile</a>
+        </li>
+        <li>
+          <a class="justify-between" href="/Products/add">menjual barang</a>
+        </li>
+        <li><a href="/">LogOut</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", (event) => {
+    document
+      .querySelector('a[href="/"]')
+      .addEventListener("click", function () {
+        localStorage.removeItem("token");
+      });
+  });
+</script>

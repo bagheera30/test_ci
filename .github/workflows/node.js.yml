@@ -1,0 +1,76 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+
+jobs:
+  build-client:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [22.11]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+      - name: Install dependencies
+        run: npm install
+      - name: Build Astro
+        run: npm run build
+
+  build-server:
+    runs-on: ubuntu-latest
+    services:
+      supabase:
+        image: supabase/postgres:latest # Use a valid tag here
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_PASSWORD: supabase
+          POSTGRES_USER: supabase
+          POSTGRES_DB: supabase
+        options: >-
+          --health-cmd "pg_isready -U supabase" 
+          --health-interval 10s 
+          --health-timeout 5s 
+          --health-retries 5
+
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+        node-version: ${{ matrix.node-version }}
+        cache: "npm"
+      - name: Install dependencies
+        run: |
+          cd Database 
+          npm install
+      - name: Wait for Supabase to be ready
+        run: |
+          for i in {1..30}; do
+            if pg_isready -h localhost -p 5432 -U supabase; then
+              echo "Supabase is ready!"
+              break
+            fi
+            echo "Waiting for Supabase..."
+            sleep 5
+          done
+      - name: Push database
+        run: |
+          cd Database 
+          npm run push
+      - name: Run tests
+        run: |
+          cd Database
+          npm run test

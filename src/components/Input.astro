@@ -1,0 +1,11 @@
+---
+const { type, placeholder, value, onChange } = Astro.props;
+---
+
+<input
+  type={type}
+  placeholder={placeholder}
+  value={value}
+  class="input input-bordered max-w-full"
+  onchange={onChange}
+/>

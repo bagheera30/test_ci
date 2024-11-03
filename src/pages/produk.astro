@@ -1,0 +1,66 @@
+---
+import Layouts from "../layouts/Layouts.astro";
+import Nav from "../components/header/Nav.astro";
+import { Image } from "astro:assets";
+import Foot from "../components/header/Foot.astro";
+---
+
+<Layouts title="detail produk">
+  <Nav />
+  <div class="h-auto flex justify bg-[#E5E5E5]">
+    <div class="h-screen">
+      <Image
+        src="https://i.dummyjson.com/data/products/1/thumbnail.jpg"
+        alt="gambar produk"
+        width="300"
+        height="350"
+        class="rounded-[10px] border border-black my-14 ml-40"
+      />
+      <Image
+        src="https://i.dummyjson.com/data/products/1/1.jpg"
+        alt="gambar produk"
+        width="100"
+        height="110"
+        class="rounded-[10px] border border-black my-10 ml-40"
+      />
+    </div>
+    <div class="text-stone-800 font-['Roboto']">
+      <h1 class="font-bold text-5xl my-24 ml-20">iPhone 9</h1>
+      <h2 class="font-bold text-3xl my-14 ml-20">Rp. 7.406.000</h2>
+      <h2 class="font-bold text-3xl ml-20">Detail Produk</h2>
+      <div class="w-[188px] h-[0px] border-2 border-red-700 ml-20"></div>
+      <p class="w-[651px]
+        h-[218px]
+        text-[22px] ml-20 mt-10">
+        NIVEA Body Lotion Extra White Instant Glow <br />200ml<br /><br />Dengan
+        pemakaian teratur, kombinasi formula yg dapat mencerahkan dan menjaga
+        kulitmu tetap cerah dari efek negatif sinar matahari. Sehingga dapat
+        merawat dari 10 tanda kulit kusam dan rusak. Sekaligus melembabkan dan
+        menghaluskan
+      </p>
+      <div class="w-[668px] h-[0px] border-2 border-red-700 mt-5 ml-20"></div>
+      <div class="flex mt-10 ml-20">
+        <h1 class="text-2xl font-bold">Jumlah</h1>
+        <h2 class="text-2xl font-bold ml-10">+</h2>
+        <h2 class="text-2xl font-bold ml-10">1</h2>
+        <h2 class="text-3xl font-bold ml-10">-</h2>
+      </div>
+      <div class="flex mt-10 ml-20">
+        <button class="btn bg-red-700"
+          ><a class="text-2xl font-bold text-white">
+            Masukan Keranjang
+          </a></button
+        >
+        <button class="btn ml-24 w-72 bg-red-700">
+          <a
+            href="https://api.whatsapp.com/send/?phone=6289632126428&text&type=phone_number&app_absent=0"
+            class="text-2xl font-bold text-white">Hubungi Penjual</a
+          >
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="bg-white">
+    <Foot />
+  </div>
+</Layouts>

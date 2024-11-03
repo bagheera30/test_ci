@@ -1,0 +1,30 @@
+---
+import Layouts from "../layouts/Layouts.astro";
+import Foot from "../components/header/Foot.astro";
+import Icon from "astro-icon";
+import FormLogin from "../components/form/FormLogin";
+const title = "Login";
+---
+
+<Layouts title={title}>
+  <div>
+    <div class="navbar bg-[#496b63] bg-opacity-9 fixed w-full33">
+      <div class="flex-1">
+        <a
+          href="/"
+          class="btn btn-ghost normal-case text-3xl text-neutral-content"
+          >MultiSellerSquare</a
+        >
+      </div>
+    </div>
+    <div class="h-screen">
+      <div class="flex justify-center items-center h-screen bg-[#E5E5E5]">
+        <div class="w-96 p-6 bg-zinc-100 rounded-md shadow-lg">
+          <FormLogin client:load />
+        </div>
+      </div>
+    </div>
+
+    <Foot />
+  </div>
+</Layouts>

@@ -1,0 +1,22 @@
+---
+import Layouts from "../layouts/Layouts.astro";
+import Foot from "../components/header/Foot.astro";
+import FormRegister from "../components/form/FormRegister.tsx";
+const title = "register";
+---
+
+<Layouts title={title}>
+  <div class="navbar bg-[#496b63] bg-opacity-9 fixed">
+    <div class="flex-1">
+      <a
+        href="/"
+        class="btn btn-ghost normal-case text-3xl text-neutral-content"
+        >MultiSellerSquare</a
+      >
+    </div>
+  </div>
+  <div class="flex justify-center items-center h-auto bg-[#E5E5E5] pt-20">
+    <FormRegister client:load />
+  </div>
+</Layouts>
+<Foot />

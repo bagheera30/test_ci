@@ -1,0 +1,19 @@
+---
+import Layouts from "../layouts/Layouts.astro";
+import Nav from "../components/header/Nav.astro";
+import Foot from "../components/header/Foot.astro";
+import { getApiResponse } from "../libs/api-libs";
+const product = await getApiResponse("products", "limit=10");
+
+import ProductList from "../components/ProductList/ProductList.tsx";
+import type { loadavg } from "os";
+---
+
+<Layouts title="Dasbord">
+  <div>
+    <ProductList client:load />
+  </div>
+  <div>
+    <Foot />
+  </div>
+</Layouts>

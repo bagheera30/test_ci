@@ -1,0 +1,25 @@
+---
+import { Icon } from "astro-icon";
+import { Link } from "astro-link";
+---
+
+<footer class="footer static p-10 bg-[#496b63] text-neutral-content">
+  <aside>
+    <Icon name="mdi:bus" class="w-20 text-white" />
+    <p class="text-white">Team Primajasa</p>
+  </aside>
+  <nav class="gap-4 md:place-self-center md:justify-self-end text-white">
+    <header class="footer-title font-bold">Social Media</header>
+    <div class="grid grid-flow-col gap-4">
+      <Link href="https://twitter.com/home">
+        <Icon name="icomoon-free:twitter" class="w-8" />
+      </Link>
+      <Link href="https://www.youtube.com/">
+        <Icon name="mdi:youtube" class="w-8" />
+      </Link>
+      <Link href="https://www.facebook.com/">
+        <Icon name="ph:facebook-logo-fill" class="w-8" />
+      </Link>
+    </div>
+  </nav>
+</footer>

@@ -1,0 +1,64 @@
+---
+import Layouts from "../../layouts/Layouts.astro";
+import { getApiResponse } from "../../libs/api-libs";
+import Nav from "../../components/header/Nav.astro";
+import { Image } from "astro:assets";
+import { getApiResponseById } from "../../libs/api-libs";
+import Foot from "../../components/header/Foot.astro";
+import Detailimage from "../../components/detailimage.astro";
+const { id } = Astro.params;
+
+export const prerender = false;
+
+const product=await getApiResponseById("products", id);
+---
+
+<Layouts title={product.title}>
+  <Nav />
+  <div class="h-auto flex justify bg-[#877e7e]">
+    <div class="h-screen">
+      <Image
+        src={product.thumbnail}
+        alt={product.title}
+        width="300"
+        height="350"
+        class="rounded-[10px] border border-black my-14 ml-40"
+      />
+      <Detailimage api={product} />
+    </div>
+    <div class="text-stone-800 font-['Roboto']">
+      <h1 class="font-bold text-5xl my-24 ml-20">{product.title}</h1>
+      <h2 class="font-bold text-3xl my-14 ml-20">Rp. {product.price}</h2>
+      <h2 class="font-bold text-3xl ml-20">Detail Produk</h2>
+      <div class="w-[188px] h-[0px] border-2 border-red-700 ml-20"></div>
+      <p class="w-[651px]
+        h-[218px]
+        text-[22px] ml-20 mt-10">
+       {product.description}
+      </p>
+      <div class="w-[668px] h-[0px] border-2 border-red-700 mt-5 ml-20"></div>
+      <div class="flex mt-10 ml-20">
+        <h1 class="text-2xl font-bold">Jumlah</h1>
+        <h2 class="text-2xl font-bold ml-10">+</h2>
+        <h2 class="text-2xl font-bold ml-10">1</h2>
+        <h2 class="text-3xl font-bold ml-10">-</h2>
+      </div>
+      <div class="flex mt-10 ml-20">
+        <button class="btn bg-red-700"
+          ><a class="text-2xl font-bold text-white">
+            Masukan Keranjang
+          </a></button
+        >
+        <button class="btn ml-24 w-72 bg-red-700">
+          <a
+            href="https://api.whatsapp.com/send/?phone=6289632126428&text&type=phone_number&app_absent=0"
+            class="text-2xl font-bold text-white">Hubungi Penjual</a
+          >
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="bg-white">
+    <Foot />
+  </div>
+</Layouts>
