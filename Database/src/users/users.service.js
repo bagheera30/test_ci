@@ -8,7 +8,7 @@ const {
   findAllUsers,
 } = require("./users.repository"); // Use ES6 import syntax
 
-const db = require("../libs/db");
+import db from "../libs/db";
 const prisma = db.getInstance();
 
 const getAllUsers = async () => {

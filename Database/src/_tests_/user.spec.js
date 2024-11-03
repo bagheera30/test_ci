@@ -2,13 +2,13 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
-import {
+const {
   createUser,
   loginUser,
   editUsersByName,
   getUser,
   getAllUsers,
-} from "./users.service";
+} = require("./users.service");
 
 // Mock PrismaClient
 jest.mock("@prisma/client");
