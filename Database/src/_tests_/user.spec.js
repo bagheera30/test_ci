@@ -4,6 +4,8 @@ import jwt from "jsonwebtoken";
 // Mock PrismaClient
 const mockPrismaClient = {
   Users: {
+    create: jest.fn(),
+    findUnique: jest.fn(),
     update: jest.fn(),
     // Add other methods that are used in your service
   },
@@ -65,23 +67,27 @@ describe("Users Service", () => {
     mockInsertUsers.mockReset();
     mockEditUsers.mockReset();
     mockFindAllUsers.mockReset();
-    mockPrismaClient.Users.update.mockReset(); // Use the mocked instance
+    mockPrismaClient.Users.create.mockReset(); // Reset create mock
+    mockPrismaClient.Users.findUnique.mockReset(); // Reset findUnique mock
+    mockPrismaClient.Users.update.mockReset(); // Reset update mock
   });
 
   describe("createUser ", () => {
     it("should create a new user with hashed password", async () => {
       // Arrange
       bcryptMock.hash.mockResolvedValue("hashedPassword");
-      mockInsertUsers.mockResolvedValue(mockUser );
+      mockPrismaClient.Users.create.mockResolvedValue(mockUser ); // Mock create method
 
       // Act
       const result = await createUser (mockUser );
 
       // Assert
       expect(bcryptMock.hash).toHaveBeenCalledWith(mockUser .password, 10);
-      expect(mockInsertUsers).toHaveBeenCalledWith({
-        ...mockUser ,
-        password: "hashedPassword",
+      expect(mockPrismaClient.Users.create).toHaveBeenCalledWith({
+        data: {
+          ...mockUser ,
+          password: "hashedPassword",
+        },
       });
       expect(result).toEqual(mockUser );
     });
@@ -125,8 +131,8 @@ describe("Users Service", () => {
 
       // Act & Assert
       await expect(
-        loginUser (mockUser .username, mockUser .password)
-      ).rejects.toThrow("User  not found");
+        loginUser (mockUser .username, mock User  .password)
+      ).rejects.toThrow("User   not found");
     });
 
     it("should throw an error if password is invalid", async () => {
@@ -141,14 +147,14 @@ describe("Users Service", () => {
     });
   });
 
-  describe("editUsersBy Nam ", () => {
+  describe("editUsersByName", () => {
     it("should update user data", async () => {
       // Arrange
       mockFindUsersByUsername.mockResolvedValue(mockUser );
       mockEditUsers.mockResolvedValue(mockUser );
 
       // Act
-      const result = await editUsersByNam (mockUser .username, mockUser );
+      const result = await editUsersByName(mockUser .username, mockUser );
 
       // Assert
       expect(mockFindUsersByUsername).toHaveBeenCalledWith(mockUser .username);
@@ -162,7 +168,7 @@ describe("Users Service", () => {
 
       // Act & Assert
       await expect(
-        editUsersByNam (mockUser .username, mockUser )
+        editUsersByName(mockUser .username, mockUser )
       ).rejects.toThrow(`User ${mockUser  .username} not found`);
     });
   });
