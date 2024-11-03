@@ -10,7 +10,7 @@ class db {
 
   static getInstance() {
     if (!this.instance) {
-      this.instance = new PrismaClient();
+      this.instance = PrismaClient();
     }
     return this.instance;
   }
