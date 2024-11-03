@@ -1,14 +1,14 @@
 // users.service.test.js
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { PrismaClient } from "@prisma/client";
+const PrismaClient = require("@prisma/client");
 const {
   createUser,
   loginUser,
   editUsersByName,
   getUser,
   getAllUsers,
-} = require("./users.service");
+} = require("../users/users.service");
 
 // Mock PrismaClient
 jest.mock("@prisma/client");
