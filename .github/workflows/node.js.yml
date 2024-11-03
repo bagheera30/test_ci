@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       supabase:
-        image: supabase/postgres:v1.0.0 # Replace with a valid tag
+        image: supabase/postgres # Replace with a valid tag
         ports:
           - 5432:5432
         env:
