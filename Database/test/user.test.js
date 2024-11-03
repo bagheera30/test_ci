@@ -1,6 +1,6 @@
 // tests/users.service.test.ts
 
-import bcrypt from "bcrypt";
+const bcrypt = "bcrypt";
 import jwt from "jsonwebtoken";
 import {
   createUser,
