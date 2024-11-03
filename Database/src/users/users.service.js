@@ -1,19 +1,17 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { PrismaClient } from "@prisma/client"; // Import PrismaClient if needed
-const {
+import { PrismaClient } from "@prisma/client";
+import {
   findUsersByUsername,
   insertUsers,
   editUsers,
   findAllUsers,
-} = require("./users.repository"); // Use ES6 import syntax
+} from "./users.repository";
 
-import db from "../libs/db";
-const prisma = db.getInstance();
+const prisma = new PrismaClient();
 
 const getAllUsers = async () => {
-  const users = await findAllUsers();
-  return users;
+  return await findAllUsers();
 };
 
 const createUser = async (userData) => {
@@ -36,34 +34,22 @@ const loginUser = async (username, password) => {
     throw new Error("Invalid password");
   }
 
-  const token = process.env.JWT_SECRET_KEY
-    ? jwt.sign(
-        { userId: user.userId, role: user.role },
-        process.env.JWT_SECRET_KEY
-      )
-    : null;
+  const token = jwt.sign(
+    { userId: user.username, role: user.role },
+    process.env.JWT_SECRET_KEY
+  );
 
-  try {
-    await prisma.Users.update({
-      where: { username: user.username },
-      data: { token: token },
-    });
-    console.log(
-      "🚀 ~ file: users.service.ts:41 ~ loginUser ~ token:",
-      user.role
-    );
-  } catch (error) {
-    console.error("Error storing token in database:", error);
-    // Handle database error appropriately
-  }
+  await prisma.Users.update({
+    where: { username: user.username },
+    data: { token },
+  });
 
   return { token, role: user.role, username: user.username };
 };
 
 const editUsersByName = async (username, userData) => {
   await getUser(username);
-  const user = await editUsers(username, userData);
-  return user;
+  return await editUsers(username, userData);
 };
 
 const getUser = async (username) => {
