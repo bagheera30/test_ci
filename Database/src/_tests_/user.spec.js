@@ -7,7 +7,6 @@ const mockPrismaClient = {
     create: jest.fn(),
     findUnique: jest.fn(),
     update: jest.fn(),
-    // Add other methods that are used in your service
   },
 };
 
@@ -17,14 +16,7 @@ jest.mock("@prisma/client", () => {
   };
 });
 
-const { PrismaClient } = require("@prisma/client");
-const {
-  createUser ,
-  loginUser ,
-  editUsersByName,
-  getUser ,
-  getAllUsers,
-} = require("../users/users.service");
+const { createUser , loginUser , editUsersByName, getUser , getAllUsers } = require("../users/users.service");
 
 // Mock bcrypt
 jest.mock("bcrypt");
@@ -59,7 +51,6 @@ const mockSign = jest.fn();
 
 describe("Users Service", () => {
   beforeEach(() => {
-    // Reset mocks before each test
     jest.clearAllMocks();
     bcryptMock.hash.mockReset();
     bcryptMock.compare.mockReset();
@@ -71,22 +62,19 @@ describe("Users Service", () => {
 
   describe("createUser ", () => {
     it("should create a new user with hashed password", async () => {
-      // Arrange
       bcryptMock.hash.mockResolvedValue("hashedPassword");
       mockPrismaClient.Users.create.mockResolvedValue({
         ...mockUser ,
-        password: "hashedPassword", // Ensure the password is hashed
+        password: "hashedPassword",
       });
 
-      // Act
       const result = await createUser (mockUser );
 
-      // Assert
       expect(bcryptMock.hash).toHaveBeenCalledWith(mockUser .password, 10);
       expect(mockPrismaClient.Users.create).toHaveBeenCalledWith({
         data: {
           ...mockUser ,
-          password: "hashedPassword", // Ensure this matches the mock resolved value
+          password: "hashedPassword",
         },
       });
       expect(result).toEqual({
@@ -98,16 +86,13 @@ describe("Users Service", () => {
 
   describe("loginUser ", () => {
     it("should return a JWT token and user details if login is successful", async () => {
-      // Arrange
       mockFindUsersByUsername.mockResolvedValue(mockUser );
       bcryptMock.compare.mockResolvedValue(true);
       jwtMock.sign.mockReturnValue("test-token");
       mockPrismaClient.Users.update.mockResolvedValue(mockUser );
 
-      // Act
       const result = await loginUser (mockUser .username, mockUser .password);
 
-      // Assert
       expect(mockFindUsersByUsername).toHaveBeenCalledWith(mockUser .username);
       expect(bcryptMock.compare).toHaveBeenCalledWith(mockUser .password, mockUser .password);
       expect(jwtMock.sign).toHaveBeenCalledWith(
@@ -126,33 +111,26 @@ describe("Users Service", () => {
     });
 
     it("should throw an error if user is not found", async () => {
-      // Arrange
       mockFindUsersByUsername.mockResolvedValue(null);
 
-      // Act & Assert
-      await expect(loginUser (mockUser .username, mockUser .password)).rejects.toThrow("User  not found");
+      await expect(loginUser (mockUser .username, mockUser .password)).rejects.toThrow("User not found");
     });
 
     it("should throw an error if password is invalid", async () => {
-      // Arrange
       mockFindUsersByUsername.mockResolvedValue(mockUser );
       bcryptMock.compare.mockResolvedValue(false);
 
-      // Act & Assert
- await expect(loginUser (mockUser .username, mockUser .password)).rejects.toThrow("Invalid password");
+      await expect(loginUser (mockUser .username, mockUser .password)).rejects.toThrow("Invalid password");
     });
   });
 
   describe("editUsersByName", () => {
     it("should update user data", async () => {
-      // Arrange
       mockFindUsersByUsername.mockResolvedValue(mockUser );
-      mockPrismaClient.Users.update .mockResolvedValue(mockUser );
+      mockPrismaClient.Users.update.mockResolvedValue(mockUser );
 
-      // Act
       const result = await editUsersByName(mockUser .username, mockUser );
 
-      // Assert
       expect(mockFindUsersByUsername).toHaveBeenCalledWith(mockUser .username);
       expect(mockPrismaClient.Users.update).toHaveBeenCalledWith({
         where: { username: mockUser .username },
@@ -162,46 +140,36 @@ describe("Users Service", () => {
     });
 
     it("should throw an error if user is not found", async () => {
-      // Arrange
       mockFindUsersByUsername.mockResolvedValue(null);
 
-      // Act & Assert
       await expect(editUsersByName(mockUser .username, mockUser )).rejects.toThrow(`User ${mockUser .username} not found`);
     });
   });
 
   describe("getUser ", () => {
     it("should return user data", async () => {
-      // Arrange
       mockFindUsersByUsername.mockResolvedValue(mockUser );
 
-      // Act
       const result = await getUser (mockUser .username);
 
-      // Assert
-      expect(mockFindUsersByUsername).toHaveBeenCalledWith(mockUser .username);
+      expect(mockFindUsersByUsername).toHaveBeenCalledWith(mockUser  .username);
       expect(result).toEqual(mockUser );
     });
 
     it("should throw an error if user is not found", async () => {
-      // Arrange
       mockFindUsersByUsername.mockResolvedValue(null);
 
-      // Act & Assert
       await expect(getUser  (mockUser .username)).rejects.toThrow(`User ${mockUser .username} not found`);
     });
   });
 
   describe("getAllUsers ", () => {
     it("should return all users", async () => {
-      // Arrange
       const mockUsers = [mockUser , { ...mockUser , username: "anotheruser" }];
       mockFindAllUsers.mockResolvedValue(mockUsers);
 
-      // Act
       const result = await getAllUsers();
 
-      // Assert
       expect(mockFindAllUsers).toHaveBeenCalled();
       expect(result).toEqual(mockUsers);
     });
