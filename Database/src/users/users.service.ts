@@ -1,12 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client'; // Import PrismaClient if needed
-const {
-    findUsersByUsername,
-    insertUsers,
-    editUsers,
-    findAllUsers // Corrected the typo here
-} = require('./users.repository');
+const { findUsersByUsername, insertUsers, editUsers, findAllUsers } = require('./users.repository'); // Use ES6 import syntax
 
 const db = require("../libs/db");
 const prisma = db.getInstance();
