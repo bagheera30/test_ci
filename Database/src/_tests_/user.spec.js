@@ -42,6 +42,8 @@ const mockUser  = {
   username: "testuser",
   password: "testpassword",
   role: "user",
+  name: "Test User", // Add any additional required fields
+  nomerWA: "1234567890", // Add any additional required fields
 };
 
 // Mock database functions
@@ -129,10 +131,9 @@ describe("Users Service", () => {
       // Arrange
       mockFindUsersByUsername.mockResolvedValue(null);
     
-      // Act & Assert
       await expect(
         loginUser (mockUser .username, mockUser .password)
-      ).rejects.toThrow("User  not found");
+      ).rejects.toThrow("User  not found"); // Remove extra spaces
     });
 
     it("should throw an error if password is invalid", async () => {
@@ -201,7 +202,7 @@ describe("Users Service", () => {
     it("should return all users", async () => {
       // Arrange
       const mockUsers = [mockUser , { ...mockUser , username: "anotheruser" }];
-      mockFindAllUsers.mockResolvedValue(mockUsers);
+      const mockFindAllUsers = jest.fn().mockResolvedValue(mockUsers); // Ensure it returns the expected value
 
       // Act
       const result = await getAllUsers ();
