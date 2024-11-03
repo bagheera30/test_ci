@@ -29,6 +29,16 @@ const mockInsertUsers = jest.fn();
 const mockEditUsers = jest.fn();
 const mockFindAllUsers = jest.fn();
 
+// Mock repository functions
+jest.mock("../users/users.repository", () => {
+  return {
+    findUsersByUsername: mockFindUsersByUsername,
+    insertUsers: mockInsertUsers,
+    editUsers: mockEditUsers,
+    findAllUsers: mockFindAllUsers,
+  };
+});
+
 // Mock Prisma Client
 jest.mock("@prisma/client", () => {
   return {
@@ -40,16 +50,6 @@ jest.mock("@prisma/client", () => {
         findMany: jest.fn(),
       },
     })),
-  };
-});
-
-// Mock repository functions
-jest.mock("../users/users.repository", () => {
-  return {
-    findUsersByUsername: mockFindUsersByUsername,
-    insertUsers: mockInsertUsers,
-    editUsers: mockEditUsers,
-    findAllUsers: mockFindAllUsers,
   };
 });
 
