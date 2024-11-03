@@ -111,7 +111,7 @@ describe("Users Service", () => {
       expect(mockFindUsersByUsername).toHaveBeenCalledWith(mockUser.username);
       expect(bcrypt.compare).toHaveBeenCalledWith(
         mockUser.password,
-        mockUser.password
+        mockUser.password // Ensure this is the hashed password in actual implementation
       );
       expect(jwt.sign).toHaveBeenCalledWith(
         { userId: mockUser.username, role: mockUser.role },
