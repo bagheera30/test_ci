@@ -44,12 +44,14 @@ jest.mock("@prisma/client", () => {
 });
 
 // Mock repository functions
-jest.mock("../users/users.repository", () => ({
-  findUsersByUsername: mockFindUsersByUsername,
-  insertUsers: mockInsertUsers,
-  editUsers: mockEditUsers,
-  findAllUsers: mockFindAllUsers,
-}));
+jest.mock("../users/users.repository", () => {
+  return {
+    findUsersByUsername: mockFindUsersByUsername,
+    insertUsers: mockInsertUsers,
+    editUsers: mockEditUsers,
+    findAllUsers: mockFindAllUsers,
+  };
+});
 
 describe("Users Service", () => {
   let mockPrismaClient;
