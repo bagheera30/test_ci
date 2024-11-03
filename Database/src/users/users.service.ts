@@ -28,7 +28,7 @@ const createUser = async (userData: { username: string; password: string; role: 
 const loginUser = async (username: string, password: string) => {
     const user = await findUsersByUsername(username);
     if (!user) {
-        throw new Error('User  not found');
+        throw new Error('User not found');
     }
 
     const isValidPassword = await bcrypt.compare(password, user.password);
@@ -36,14 +36,14 @@ const loginUser = async (username: string, password: string) => {
         throw new Error('Invalid password');
     }
 
-    const token = process.env.JWT_SECRET_KEY ? jwt.sign({ userId: user.userId, role: user.role }, process.env.JWT_SECRET_KEY) : null;// Corrected here
+    const token = process.env.JWT_SECRET_KEY ? jwt.sign({ userId: user.userId, role: user.role }, process.env.JWT_SECRET_KEY) : null;
 
     try {
         await prisma.Users.update({
             where: { username: user.username },
             data: { token: token },
         });
-        console.log("🚀 ~ file: users.service.ts:41 ~ loginUser  ~ token:", user.role);
+        console.log("🚀 ~ file: users.service.ts:41 ~ loginUser ~ token:", user.role);
     } catch (error) {
         console.error('Error storing token in database:', error);
         // Handle database error appropriately
@@ -59,9 +59,9 @@ const editUsersByName = async (username: string, userData: any) => {
 }
 
 const getUser = async (username: string) => {
-    const user = await findUsersByUsername(username); // Added await here
+    const user = await findUsersByUsername(username);
     if (!user) {
-        throw new Error(`User  ${username} not found`);
+        throw new Error(`User ${username} not found`);
     }
     return user;
 }
