@@ -1,7 +1,7 @@
 // users.service.test.js
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-const PrismaClient = require("@prisma/client");
+import { PrismaClient } from '@prisma/client';
 const {
   createUser,
   loginUser,
