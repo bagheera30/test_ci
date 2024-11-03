@@ -131,8 +131,8 @@ describe("Users Service", () => {
 
       // Act & Assert
       await expect(
-        loginUser (mockUser .username, mock User  .password)
-      ).rejects.toThrow("User   not found");
+        loginUser (mockUser .username, mockUser .password) // Corrected this line
+      ).reject s.toThrow("User  not found");
     });
 
     it("should throw an error if password is invalid", async () => {
