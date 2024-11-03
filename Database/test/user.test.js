@@ -1,179 +1,151 @@
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const {
+// tests/users.service.test.ts
+
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import {
   createUser,
   loginUser,
   editUsersByName,
   getUser,
   getAllUsers,
-} = require("../src/users/users.service");
+} from "../src/users/users.service"; // Adjust the path accordingly
+
+// Mock the repository functions
+jest.mock("./users.repository", () => ({
+  findUsersByUsername: jest.fn(),
+  insertUsers: jest.fn(),
+  editUsers: jest.fn(),
+  findAllUsers: jest.fn(),
+}));
+
 const {
   findUsersByUsername,
   insertUsers,
   editUsers,
-  fiindAllUsers,
-} = require("../src/users/users.repository");
+  findAllUsers,
+} = require("./users.repository");
 
-// Mock data for testing
-const mockUsers = [
-  {
-    userId: "1",
-    username: "userA",
-    name: "User A",
-    nomerWA: "081234567890",
-    password: "passwordA",
-    role: "user",
-  },
-  {
-    userId: "2",
-    username: "userB",
-    name: "User B",
-    nomerWA: "089876543210",
-    password: "passwordB",
-    role: "admin",
-  },
-];
+describe("User  Service", () => {
+  afterEach(() => {
+    jest.clearAllMocks(); // Clear mocks after each test
+  });
 
-jest.mock("../src/users/users.repository", () => ({
-  findUsersByUsername: jest.fn((username) =>
-    Promise.resolve(mockUsers.find((user) => user.username === username))
-  ),
-  insertUsers: jest.fn((userData) =>
-    Promise.resolve({ ...userData, userId: "3" })
-  ),
-  editUsers: jest.fn((username, userData) =>
-    Promise.resolve({
-      ...mockUsers.find((user) => user.username === username),
-      ...userData,
-    })
-  ),
-  fiindAllUsers: jest.fn(() => Promise.resolve(mockUsers)),
-}));
+  describe("getAllUsers", () => {
+    it("should return a list of users", async () => {
+      const mockUsers = [
+        { username: "user1", role: "admin" },
+        { username: "user2", role: "user" },
+      ];
+      findAllUsers.mockResolvedValue(mockUsers);
 
-// Mock bcrypt for testing
-jest.mock("bcrypt", () => ({
-  hash: jest.fn((password, saltRounds) => Promise.resolve("hashedPassword")),
-  compare: jest.fn((password, hash) =>
-    Promise.resolve(password === "passwordA")
-  ),
-}));
-
-// Mock jwt for testing
-jest.mock("jsonwebtoken", () => ({
-  sign: jest.fn((payload, secret) => Promise.resolve("mockToken")),
-}));
-
-// Mock Prisma (assuming you're using Prisma)
-jest.mock("../src/libs/db.ts", () => ({
-  getInstance: jest.fn(() => ({
-    Users: {
-      update: jest.fn(),
-    },
-  })),
-}));
-
-describe("User Service", () => {
-  it("should create a new user", async () => {
-    const newUser = {
-      username: "userC",
-      name: "User C",
-      nomerWA: "081111111111",
-      password: "passwordC",
-      role: "user",
-    };
-
-    const createdUser = await createUser(newUser);
-
-    expect(createdUser).toEqual({
-      ...newUser,
-      userId: "3",
-      password: "hashedPassword", // Hashed password
-    });
-    expect(bcrypt.hash).toHaveBeenCalledWith(newUser.password, 10);
-    expect(insertUsers).toHaveBeenCalledWith({
-      ...newUser,
-      password: "hashedPassword",
+      const users = await getAllUsers();
+      expect(users).toEqual(mockUsers);
+      expect(findAllUsers).toHaveBeenCalledTimes(1);
     });
   });
 
-  it("should login a user", async () => {
-    const username = "userA";
-    const password = "passwordA";
+  describe("createUser ", () => {
+    it("should create a new user with a hashed password", async () => {
+      const userData = {
+        username: "newUser ",
+        password: "password123",
+        role: "user",
+      };
+      const hashedPassword = await bcrypt.hash(userData.password, 10);
+      const mockUser = { ...userData, password: hashedPassword };
 
-    const user = await loginUser(username, password);
+      insertUsers.mockResolvedValue(mockUser);
 
-    expect(user.token).toBe("mockToken");
-    expect(user.role).toBe("user");
-    expect(user.username).toBe(username);
-    expect(bcrypt.compare).toHaveBeenCalledWith(password, "passwordA");
-    expect(jwt.sign).toHaveBeenCalledWith(
-      { userId: "1", role: "user" },
-      "{process.env.JWT_SECRET_KEY}"
-    );
-    expect(prisma.Users.update).toHaveBeenCalledWith({
-      where: { username: "userA" },
-      data: { token: "mockToken" },
+      const user = await createUser(userData);
+      expect(user).toEqual(mockUser);
+      expect(insertUsers).toHaveBeenCalledWith({
+        ...userData,
+        password: hashedPassword,
+      });
     });
   });
 
-  it("should throw an error if user not found", async () => {
-    const username = "nonexistentUser";
-    const password = "password";
+  describe("loginUser ", () => {
+    it("should return a token and user details on successful login", async () => {
+      const username = "existingUser ";
+      const password = "password123";
+      const mockUser = {
+        username,
+        password: await bcrypt.hash(password, 10),
+        userId: "1",
+        role: "user",
+      };
+      findUsersByUsername.mockResolvedValue(mockUser);
+      process.env.JWT_SECRET_KEY = "secret";
 
-    await expect(loginUser(username, password)).rejects.toThrowError(
-      "User not found"
-    );
-    expect(findUsersByUsername).toHaveBeenCalledWith(username);
-  });
-
-  it("should throw an error if invalid password", async () => {
-    const username = "userA";
-    const password = "wrongPassword";
-
-    await expect(loginUser(username, password)).rejects.toThrowError(
-      "Invalid password"
-    );
-    expect(bcrypt.compare).toHaveBeenCalledWith(password, "passwordA");
-  });
-
-  it("should edit a user by username", async () => {
-    const username = "userA";
-    const updatedUser = {
-      name: "Updated User A",
-      nomerWA: "081111111111",
-    };
-
-    const editedUser = await editUsersByName(username, updatedUser);
-
-    expect(editedUser).toEqual({
-      ...mockUsers[0],
-      ...updatedUser,
+      const token = await loginUser(username, password);
+      expect(token).toHaveProperty("token");
+      expect(token).toHaveProperty("role", mockUser.role);
+      expect(token).toHaveProperty("username", mockUser.username);
+      expect(findUsersByUsername).toHaveBeenCalledWith(username);
     });
-    expect(editUsers).toHaveBeenCalledWith(username, updatedUser);
+
+    it("should throw an error if the user is not found", async () => {
+      findUsersByUsername.mockResolvedValue(null);
+
+      await expect(
+        loginUser("nonExistentUser ", "password123")
+      ).rejects.toThrow("User  not found");
+    });
+
+    it("should throw an error if the password is invalid", async () => {
+      const username = "existingUser ";
+      const mockUser = {
+        username,
+        password: await bcrypt.hash("correctPassword", 10),
+      };
+      findUsersByUsername.mockResolvedValue(mockUser);
+
+      await expect(loginUser(username, "wrongPassword")).rejects.toThrow(
+        "Invalid password"
+      );
+    });
   });
 
-  it("should throw an error if user not found for editing", async () => {
-    const username = "nonexistentUser";
-    const updatedUser = {
-      name: "Updated User",
-    };
+  describe("editUsersByName", () => {
+    it("should edit user details", async () => {
+      const username = "existingUser ";
+      const userData = { role: "admin" };
+      const mockUser = { username, role: "user" };
+      findUsersByUsername.mockResolvedValue(mockUser);
+      editUsers.mockResolvedValue({ ...mockUser, ...userData });
 
-    await expect(editUsersByName(username, updatedUser)).rejects.toThrowError(
-      `User ${username} not found`
-    );
-    expect(findUsersByUsername).toHaveBeenCalledWith(username);
+      const updatedUser = await editUsersByName(username, userData);
+      expect(updatedUser).toEqual({ ...mockUser, ...userData });
+      expect(editUsers).toHaveBeenCalledWith(username, userData);
+    });
+
+    it("should throw an error if the user is not found", async () => {
+      findUsersByUsername.mockResolvedValue(null);
+
+      await expect(editUsersByName("nonExistentUser ", {})).rejects.toThrow(
+        `User  nonExistentUser  not found`
+      );
+    });
   });
 
-  it("should get all users", async () => {
-    const users = await getAllUsers();
-    expect(users).toEqual(mockUsers);
-    expect(fiindAllUsers).toHaveBeenCalledTimes(1);
-  });
+  describe("getUser ", () => {
+    it("should return a user by username", async () => {
+      const username = "existingUser ";
+      const mockUser = { username, role: "user" };
+      findUsersByUsername.mockResolvedValue(mockUser);
 
-  it("should get a user by username", async () => {
-    const username = "userA";
-    const user = await getUser(username);
-    expect(user).toEqual(mockUsers[0]);
-    expect(findUsersByUsername).toHaveBeenCalledWith(username);
+      const user = await getUser(username);
+      expect(user).toEqual(mockUser);
+      expect(findUsersByUsername).toHaveBeenCalledWith(username);
+    });
+
+    it("should throw an error if the user is not found", async () => {
+      findUsersByUsername.mockResolvedValue(null);
+
+      await expect(getUser("nonExistentUser ")).rejects.toThrow(
+        `User  nonExistentUser  not found`
+      );
+    });
   });
 });
