@@ -60,12 +60,13 @@ describe("Users Service", () => {
     mockPrismaClient.Users.update.mockReset();
   });
 
-  describe("createUser ", () => {
+  describe("createUser  ", () => {
     it("should create a new user with hashed password", async () => {
       bcryptMock.hash.mockResolvedValue("hashedPassword");
       mockPrismaClient.Users.create.mockResolvedValue({
         ...mockUser ,
         password: "hashedPassword",
+        token: undefined, // Add token if needed
       });
 
       const result = await createUser (mockUser );
@@ -84,17 +85,16 @@ describe("Users Service", () => {
     });
   });
 
-  describe("loginUser ", () => {
+  describe("loginUser  ", () => {
     it("should return a JWT token and user details if login is successful", async () => {
       mockFindUsersByUsername.mockResolvedValue(mockUser );
       bcryptMock.compare.mockResolvedValue(true);
       jwtMock.sign.mockReturnValue("test-token");
-      mockPrismaClient.Users.update.mockResolvedValue(mockUser );
 
       const result = await loginUser (mockUser .username, mockUser .password);
 
       expect(mockFindUsersByUsername).toHaveBeenCalledWith(mockUser .username);
-      expect(bcryptMock.compare).toHaveBeenCalledWith(mockUser .password, mockUser .password);
+      expect(bcryptMock.compare).toHaveBeenCalledWith(mockUser .password, "hashedPassword"); // Compare with hashed password
       expect(jwtMock.sign).toHaveBeenCalledWith(
         { userId: mockUser .username, role: mockUser .role },
         process.env.JWT_SECRET_KEY
@@ -113,11 +113,11 @@ describe("Users Service", () => {
     it("should throw an error if user is not found", async () => {
       mockFindUsersByUsername.mockResolvedValue(null);
 
-      await expect(loginUser (mockUser .username, mockUser .password)).rejects.toThrow("User not found");
+      await expect(loginUser (mockUser .username, mockUser .password)).rejects.toThrow("User  not found");
     });
 
     it("should throw an error if password is invalid", async () => {
-      mockFindUsersByUsername.mockResolvedValue(mockUser );
+      mockFindUsersByUsername.mockResolvedValue (mockUser );
       bcryptMock.compare.mockResolvedValue(false);
 
       await expect(loginUser (mockUser .username, mockUser .password)).rejects.toThrow("Invalid password");
@@ -146,13 +146,13 @@ describe("Users Service", () => {
     });
   });
 
-  describe("getUser ", () => {
+  describe("getUser  ", () => {
     it("should return user data", async () => {
       mockFindUsersByUsername.mockResolvedValue(mockUser );
 
       const result = await getUser (mockUser .username);
 
-      expect(mockFindUsersByUsername).toHaveBeenCalledWith(mockUser  .username);
+      expect(mockFindUsersByUsername).toHaveBeenCalledWith(mockUser .username);
       expect(result).toEqual(mockUser );
     });
 
@@ -163,7 +163,7 @@ describe("Users Service", () => {
     });
   });
 
-  describe("getAllUsers ", () => {
+  describe("getAllUsers  ", () => {
     it("should return all users", async () => {
       const mockUsers = [mockUser , { ...mockUser , username: "anotheruser" }];
       mockFindAllUsers.mockResolvedValue(mockUsers);
