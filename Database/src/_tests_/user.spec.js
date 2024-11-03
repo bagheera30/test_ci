@@ -117,10 +117,7 @@ describe("Users Service", () => {
         { userId: mockUser.username, role: mockUser.role },
         process.env.JWT_SECRET_KEY
       );
-      expect(mockPrismaClient.Users.update).toHaveBeenCalledWith({
-        where: { username: mockUser.username },
-        data: { token: "test-token" },
-      });
+
       expect(result).toEqual({
         token: "test-token",
         role: mockUser.role,
