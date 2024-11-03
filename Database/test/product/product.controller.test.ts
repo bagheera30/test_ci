@@ -1,7 +1,7 @@
 import express from 'express';
 import { expect } from 'chai';
 const request = require('chai-http');
-import sinon from 'sinon';
+const sinon = require('sinon');
 const router = express.Router();
 // import productRouter from '../path/to/your/router'; // Adjust the path accordingly
 const {
