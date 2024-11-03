@@ -1,4 +1,4 @@
-export {};
+
 const db = require("../libs/db");
 
 const prisma = db.getInstance();
