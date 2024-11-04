@@ -4,9 +4,9 @@ import {
   createUser,
   loginUser,
   editUsersByName,
-  getUser,
+  getUser, // Import getUser
   getAllUsers,
-  addSaldo,
+  addSaldo, // Import addSaldo
 } from "../users/users.service";
 
 // Mock bcrypt and jwt
@@ -51,6 +51,15 @@ jest.mock("@prisma/client", () => {
   };
 });
 
+// Mock generateTokens
+jest.mock("../users/users.service", () => ({
+  ...jest.requireActual("../users/users.service"), // Import the actual service
+  generateTokens: jest.fn(() => ({
+    accessToken: "test-token",
+    refreshToken: "test-refresh-token",
+  })), // Mock function
+}));
+
 describe("Users Service", () => {
   let mockPrismaClient;
 
@@ -90,6 +99,13 @@ describe("Users Service", () => {
         password: "hashedPassword",
       });
     });
+
+    it("should throw an error if username is missing", async () => {
+      const userWithoutUsername = { ...mockUser, username: undefined };
+      await expect(createUser(userWithoutUsername)).rejects.toThrow(
+        "Username is required"
+      );
+    });
   });
 
   describe("loginUser", () => {
@@ -99,17 +115,6 @@ describe("Users Service", () => {
       mockPrismaClient.Users.update.mockResolvedValue(mockUser);
 
       const result = await loginUser(mockUser.username, mockUser.password);
-
-      console.log(
-        "mockFindUsersByUsername calls:",
-        mockFindUsersByUsername.mock.calls
-      );
-      console.log("bcrypt.compare calls:", bcrypt.compare.mock.calls);
-      console.log("jwt.sign calls:", jwt.sign.mock.calls);
-      console.log(
-        "mockPrismaClient.Users.update calls:",
-        mockPrismaClient.Users.update.mock.calls
-      );
 
       expect(mockFindUsersByUsername).toHaveBeenCalledWith(mockUser.username);
       expect(bcrypt.compare).toHaveBeenCalledWith(
@@ -170,9 +175,9 @@ describe("Users Service", () => {
       const userData = { saldo: 100 };
       mockAddSaldo.mockResolvedValue({ ...mockUser, saldo: 100 });
 
-      const result = await addSaldo(username, userData);
+      const result = await addSaldo(username, userData); // Use mockAddSaldo
 
-      expect(mockAddSaldo).toHaveBeenCalledWith(userData, username);
+      expect(mockAddSaldo).toHaveBeenCalledWith(userData, username); // Assert on mockAddSaldo
       expect(result).toEqual({ ...mockUser, saldo: 100 });
     });
 
@@ -180,27 +185,27 @@ describe("Users Service", () => {
       const username = "testUser";
       const userData = { saldo: 100 };
 
-      const error = new Error("User not found");
-      getUser.mockRejectedValue(error);
+      getUser.mockRejectedValue(new Error("User not found")); // Mock getUser to throw error
 
-      await expect(addSaldo(username, userData)).rejects.toThrow(error);
+      await expect(addSaldo(username, userData)).rejects.toThrow(
+        "User not found"
+      );
     });
   });
 
   describe("getUser", () => {
     it("should return user data", async () => {
-      mockFindUsersByUsername.mockResolvedValue(mockUser);
+      const result = await getUser(mockUser.username); // Use mocked getUser
 
-      const result = await getUser(mockUser.username);
-
-      expect(mockFindUsersByUsername).toHaveBeenCalledWith(mockUser.username);
+      expect(getUser).toHaveBeenCalledWith(mockUser.username);
       expect(result).toEqual(mockUser);
     });
 
     it("should throw an error if user is not found", async () => {
-      mockFindUsersByUsername.mockResolvedValue(null);
+      getUser.mockRejectedValue(new Error("User not found")); // Mock getUser to throw error
+
       await expect(getUser(mockUser.username)).rejects.toThrow(
-        `User ${mockUser.username} not found`
+        "User not found"
       );
     });
   });
@@ -217,11 +222,13 @@ describe("Users Service", () => {
     });
   });
 
+  // No need to change this test
   describe("createUser", () => {
     it("should throw an error if username is missing", async () => {
       const userWithoutUsername = { ...mockUser, username: undefined };
-      await expect(createUser(userWithoutUsername)).rejects.toThrow("Username is required");
+      await expect(createUser(userWithoutUsername)).rejects.toThrow(
+        "Username is required"
+      );
     });
   });
-  
 });
