@@ -216,4 +216,12 @@ describe("Users Service", () => {
       expect(result).toEqual(mockUsers);
     });
   });
+
+  describe("createUser", () => {
+    it("should throw an error if username is missing", async () => {
+      const userWithoutUsername = { ...mockUser, username: undefined };
+      await expect(createUser(userWithoutUsername)).rejects.toThrow("Username is required");
+    });
+  });
+  
 });
