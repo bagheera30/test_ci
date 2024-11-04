@@ -6,7 +6,7 @@ import {
   insertUsers,
   editUsers,
   findAllUsers,
-  addSaldo,
+  addSaldo, // Import from users.repository
 } from "./users.repository";
 
 const prisma = new PrismaClient();
@@ -24,9 +24,10 @@ const createUser = async (userData) => {
   return user;
 };
 
-const addSaldo = async (username, userData) => {
+// Renamed function
+const addSaldoToAccount = async (username, userData) => {
   await getUser(username);
-  return await addSaldo(username, userData);
+  return await addSaldo(username, userData); // Use the imported addSaldo
 };
 
 const loginUser = async (username, password) => {
@@ -98,6 +99,6 @@ export {
   editUsersByName,
   getUser,
   getAllUsers,
-  addSaldo,
+  addSaldoToAccount, // Exported with the new name
   refreshAccessToken,
 };
