@@ -49,11 +49,7 @@ const loginUser = async (username, password) => {
   // });
 
   return {
-<<<<<<< HEAD
-    token: accessToken,
-=======
-
->>>>>>> 2c4b87055eeac53b87205e57a5b7d45dac711a64
+    token,
     // accessToken,
 
     // refreshToken,
@@ -72,7 +68,7 @@ const loginUser = async (username, password) => {
 //       throw new Error("Invalid refresh token");
 //     }
 
-const { accessToken } = generateTokens(user);
+// const { accessToken } = generateTokens(user);
 
 //     // Update refresh token in the database
 //     await prisma.Users.update({
