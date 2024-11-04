@@ -16,6 +16,7 @@ model Users {
   createdAt DateTime @default(now()) @db.Timestamp(0)
   updateAt  DateTime @default(now()) @db.Timestamp(0)
   nomerWA    String?
+  saldo     Int
   carts     cart[]
   token     String?
 }

@@ -6,6 +6,7 @@ import {
   editUsersByName,
   getUser,
   getAllUsers,
+  addSaldo,
 } from "../users/users.service";
 
 // Mock bcrypt and jwt
@@ -24,6 +25,7 @@ const mockUser = {
   role: "user",
   name: "Test User",
   nomerWA: "1234567890",
+  saldo: 0,
 };
 
 // Import the mock functions
@@ -32,6 +34,7 @@ const {
   insertUsers: mockInsertUsers,
   editUsers: mockEditUsers,
   findAllUsers: mockFindAllUsers,
+  addSaldo: mockAddSaldo, // Import the mocked addSaldo function
 } = require("../users/users.repository");
 
 // Mock Prisma Client
@@ -158,6 +161,29 @@ describe("Users Service", () => {
       await expect(
         editUsersByName(mockUser.username, mockUser)
       ).rejects.toThrow(`User ${mockUser.username} not found`);
+    });
+  });
+
+  describe("addSaldo", () => {
+    it("should add saldo to user", async () => {
+      const username = "testUser";
+      const userData = { saldo: 100 };
+      mockAddSaldo.mockResolvedValue({ ...mockUser, saldo: 100 });
+
+      const result = await addSaldo(username, userData);
+
+      expect(mockAddSaldo).toHaveBeenCalledWith(userData, username);
+      expect(result).toEqual({ ...mockUser, saldo: 100 });
+    });
+
+    it("should throw an error if user is not found", async () => {
+      const username = "testUser";
+      const userData = { saldo: 100 };
+
+      const error = new Error("User not found");
+      getUser.mockRejectedValue(error);
+
+      await expect(addSaldo(username, userData)).rejects.toThrow(error);
     });
   });
 

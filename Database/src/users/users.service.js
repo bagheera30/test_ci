@@ -6,6 +6,7 @@ import {
   insertUsers,
   editUsers,
   findAllUsers,
+  addSaldo,
 } from "./users.repository";
 
 const prisma = new PrismaClient();
@@ -21,6 +22,11 @@ const createUser = async (userData) => {
     password: hashedPassword,
   });
   return user;
+};
+
+const addSaldo = async (username, userData) => {
+  await getUser(username);
+  return await addSaldo(username, userData);
 };
 
 const loginUser = async (username, password) => {
