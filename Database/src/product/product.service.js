@@ -10,7 +10,7 @@ const {
 const DEFAULT_PRODUCT_LIMIT = 100; // Misalnya, batas default untuk pengambilan produk
 
 const getAllProducts = async (page = 1, limit = DEFAULT_PRODUCT_LIMIT) => {
-  // Menghitung offset untuk pagination
+
   const offset = (page - 1) * limit;
   const products = await findProducts(limit, offset); // Menggunakan limit dan offset
 
