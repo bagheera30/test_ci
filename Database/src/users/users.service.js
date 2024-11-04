@@ -49,8 +49,13 @@ const loginUser = async (username, password) => {
   // });
 
   return {
+<<<<<<< HEAD
     token: accessToken,
+=======
+
+>>>>>>> 2c4b87055eeac53b87205e57a5b7d45dac711a64
     // accessToken,
+
     // refreshToken,
     role: user.role,
     username: user.username,
