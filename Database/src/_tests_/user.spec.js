@@ -51,36 +51,39 @@ jest.mock("@prisma/client", () => {
   };
 });
 
-// Mock the entire users.service
-jest.mock("../users/users.service", () => ({
-  createUser: jest.fn(async (userData) => {
-    const hashedPassword = await bcrypt.hash(userData.password, 10); // Call bcrypt.hash here
-    return Promise.resolve({ ...userData, password: hashedPassword }); // Return a promise
-  }),
-  loginUser: jest.fn(async (username, password) => {
-    const user = await mockFindUsersByUsername(username); // Call mockFindUsersByUsername here
-    const isValidPassword = await bcrypt.compare(password, user.password); // Call bcrypt.compare
-    if (!isValidPassword) {
-      throw new Error("Invalid password");
-    }
-    return Promise.resolve({ ...user, token: "test-token" }); // Return a promise
-  }),
-  editUsersByName: jest.fn(async (username, userData) => {
-    await mockFindUsersByUsername(username); // Call mockFindUsersByUsername here
-    await mockEditUsers(username, userData); // Call mockEditUsers
-    return Promise.resolve(userData); // Return a promise
-  }),
-  getUser: jest.fn(async () => Promise.resolve(mockUser)), // Return a promise
-  getAllUsers: jest.fn(async () => Promise.resolve([mockUser])), // Return a promise
-  addSaldo: jest.fn(async (username, userData) => {
-    const result = await mockAddSaldo(userData, username); // Call mockAddSaldo here
-    return Promise.resolve(result); // Return a promise
-  }),
-  generateTokens: jest.fn(() => ({
-    accessToken: "test-token",
-    refreshToken: "test-refresh-token",
-  })), // Mock generateTokens
-}));
+// Correctly mock the users.service
+jest.mock("../users/users.service", () => {
+  const bcrypt = require("bcrypt"); // Import bcrypt inside the mock factory
+  return {
+    createUser: jest.fn(async (userData) => {
+      const hashedPassword = await bcrypt.hash(userData.password, 10);
+      return Promise.resolve({ ...userData, password: hashedPassword });
+    }),
+    loginUser: jest.fn(async (username, password) => {
+      const user = await mockFindUsersByUsername(username);
+      const isValidPassword = await bcrypt.compare(password, user.password);
+      if (!isValidPassword) {
+        throw new Error("Invalid password");
+      }
+      return Promise.resolve({ ...user, token: "test-token" });
+    }),
+    editUsersByName: jest.fn(async (username, userData) => {
+      await mockFindUsersByUsername(username);
+      await mockEditUsers(username, userData);
+      return Promise.resolve(userData);
+    }),
+    getUser: jest.fn(async () => Promise.resolve(mockUser)),
+    getAllUsers: jest.fn(async () => Promise.resolve([mockUser])),
+    addSaldo: jest.fn(async (username, userData) => {
+      const result = await mockAddSaldo(userData, username);
+      return Promise.resolve(result);
+    }),
+    generateTokens: jest.fn(() => ({
+      accessToken: "test-token",
+      refreshToken: "test-refresh-token",
+    })),
+  };
+});
 
 describe("Users Service", () => {
   let mockPrismaClient;
@@ -139,7 +142,7 @@ describe("Users Service", () => {
       expect(mockFindUsersByUsername).toHaveBeenCalledWith(mockUser.username);
       expect(bcrypt.compare).toHaveBeenCalledWith(
         mockUser.password,
-        mockUser.password // Ensure this is the hashed password in actual implementation
+        mockUser.password
       );
       expect(jwt.sign).toHaveBeenCalledWith(
         { userId: mockUser.username, role: mockUser.role },
@@ -195,9 +198,9 @@ describe("Users Service", () => {
       const userData = { saldo: 100 };
       mockAddSaldo.mockResolvedValue({ ...mockUser, saldo: 100 });
 
-      const result = await addSaldo(username, userData); // Use mockAddSaldo
+      const result = await addSaldo(username, userData);
 
-      expect(mockAddSaldo).toHaveBeenCalledWith(userData, username); // Assert on mockAddSaldo
+      expect(mockAddSaldo).toHaveBeenCalledWith(userData, username);
       expect(result).toEqual({ ...mockUser, saldo: 100 });
     });
 
@@ -216,7 +219,7 @@ describe("Users Service", () => {
 
   describe("getUser", () => {
     it("should return user data", async () => {
-      const result = await getUser(mockUser.username); // Use mocked getUser
+      const result = await getUser(mockUser.username);
 
       expect(getUser).toHaveBeenCalledWith(mockUser.username);
       expect(result).toEqual(mockUser);
