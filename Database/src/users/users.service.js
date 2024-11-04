@@ -43,10 +43,10 @@ const loginUser = async (username, password) => {
 
   // const { accessToken, refreshToken } = generateTokens(user);
 
-  await prisma.Users.update({
-    where: { username: user.username },
-    data: { token: refreshToken }, // Save refresh token in DB
-  });
+  // await prisma.Users.update({
+  //   where: { username: user.username },
+  //   data: { token: refreshToken }, // Save refresh token in DB
+  // });
 
   return {
     accessToken,
