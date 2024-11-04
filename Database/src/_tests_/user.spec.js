@@ -117,7 +117,6 @@ describe("Users Service", () => {
         { userId: mockUser.username, role: mockUser.role },
         process.env.JWT_SECRET_KEY
       );
-
       expect(result).toEqual({
         token: "test-token",
         role: mockUser.role,
