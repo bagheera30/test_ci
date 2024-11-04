@@ -1,35 +1,27 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { PrismaClient } from "@prisma/client";
-import {
+
+const db = require("../libs/db");
+const prisma = db.getInstance();
+
+const {
   findUsersByUsername,
   insertUsers,
   editUsers,
-  findAllUsers,
-  addSaldo, // Import from users.repository
-} from "./users.repository";
-
-const prisma = new PrismaClient();
-
+  fiindAllUsers,
+} = require("./users.repository");
 const getAllUsers = async () => {
-  return await findAllUsers();
+  const users = await fiindAllUsers();
+  return users;
 };
-
 const createUser = async (userData) => {
   const hashedPassword = await bcrypt.hash(userData.password, 10);
   const user = await insertUsers({
     ...userData,
-    password: hashedPassword,
+    password: hashedPassword.toString(),
   });
   return user;
 };
-
-// Renamed function
-const addSaldoToAccount = async (username, userData) => {
-  await getUser(username);
-  return await addSaldo(username, userData); // Use the imported addSaldo
-};
-
 const loginUser = async (username, password) => {
   const user = await findUsersByUsername(username);
   if (!user) {
@@ -41,66 +33,44 @@ const loginUser = async (username, password) => {
     throw new Error("Invalid password");
   }
 
-  // const { accessToken, refreshToken } = generateTokens(user);
+  const token = jwt.sign(
+    { userId: user.userId, role: user.role },
+    "{process.env.JWT_SECRET_KEY}"
+  );
+  // Include role in token payload
 
-  // await prisma.Users.update({
-  //   where: { username: user.username },
-  //   data: { token: refreshToken }, // Save refresh token in DB
-  // });
+  try {
+    await prisma.Users.update({
+      where: { username: user.username },
+      data: { token: token },
+    }); // Store token in database using Prisma
+  } catch (error) {
+    console.error("Error storing token in database:", error);
+    // Handle database error appropriately
+  }
 
-  return {
-    token,
-    // accessToken,
-
-    // refreshToken,
-    role: user.role,
-    username: user.username,
-  };
+  return { token, role: user.role, username: user.username }; // Return both token and role
 };
 
-// Refresh access token
-// const refreshAccessToken = async (refreshToken) => {
-//   try {
-//     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY);
-//     const user = await findUsersByUsername(decoded.userId);
-
-//     if (!user || user.token !== refreshToken) {
-//       throw new Error("Invalid refresh token");
-//     }
-
-// const { accessToken } = generateTokens(user);
-
-//     // Update refresh token in the database
-//     await prisma.Users.update({
-//       where: { username: user.username },
-//       data: { token: newRefreshToken },
-//     });
-
-//     return { accessToken, refreshToken: newRefreshToken };
-//   } catch (error) {
-//     throw new Error("Invalid or expired refresh token");
-//   }
-// };
-
-const editUsersByName = async (username, userData) => {
-  await getUser(username);
-  return await editUsers(username, userData);
+const editUsersByname = async (username, userData) => {
+  await getuserByusername(username);
+  const user = await editUsers(username, userData);
+  return user;
 };
-
-const getUser = async (username) => {
-  const user = await findUsersByUsername(username);
+const getuserByusername = async (username) => {
+  const user = findUsersByUsername(username);
   if (!user) {
     throw new Error(`User ${username} not found`);
   }
   return user;
 };
 
-export {
+module.exports = {
   createUser,
   loginUser,
-  editUsersByName,
-  getUser,
+  editUsersByname,
+
+  getuserByusername,
+
   getAllUsers,
-  addSaldoToAccount, // Exported with the new name
-  // refreshAccessToken,
 };
