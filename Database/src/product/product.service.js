@@ -6,8 +6,13 @@ const {
   editProduct,
 } = require("./product.repository");
 
-const getAllProducts = async () => {
-  const products = await findProducts();
+// Menambahkan variabel untuk batas default produk yang ditampilkan
+const DEFAULT_PRODUCT_LIMIT = 100; // Misalnya, batas default untuk pengambilan produk
+
+const getAllProducts = async (page = 1, limit = DEFAULT_PRODUCT_LIMIT) => {
+  // Menghitung offset untuk pagination
+  const offset = (page - 1) * limit;
+  const products = await findProducts(limit, offset); // Menggunakan limit dan offset
 
   return products;
 };
@@ -48,4 +53,5 @@ module.exports = {
   createProduct,
   deleteProductById,
   editProductById,
+  DEFAULT_PRODUCT_LIMIT, // Menambahkan variabel ke ekspor
 };
