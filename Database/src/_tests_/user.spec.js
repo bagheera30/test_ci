@@ -53,12 +53,29 @@ jest.mock("@prisma/client", () => {
 
 // Mock the entire users.service
 jest.mock("../users/users.service", () => ({
-  createUser: jest.fn(), // Mock createUser
-  loginUser: jest.fn(), // Mock loginUser
-  editUsersByName: jest.fn(), // Mock editUsersByName
-  getUser: jest.fn(() => mockUser), // Mock getUser
-  getAllUsers: jest.fn(), // Mock getAllUsers
-  addSaldo: jest.fn(), // Mock addSaldo
+  createUser: jest.fn(async (userData) => {
+    const hashedPassword = await bcrypt.hash(userData.password, 10); // Call bcrypt.hash here
+    return Promise.resolve({ ...userData, password: hashedPassword }); // Return a promise
+  }),
+  loginUser: jest.fn(async (username, password) => {
+    const user = await mockFindUsersByUsername(username); // Call mockFindUsersByUsername here
+    const isValidPassword = await bcrypt.compare(password, user.password); // Call bcrypt.compare
+    if (!isValidPassword) {
+      throw new Error("Invalid password");
+    }
+    return Promise.resolve({ ...user, token: "test-token" }); // Return a promise
+  }),
+  editUsersByName: jest.fn(async (username, userData) => {
+    await mockFindUsersByUsername(username); // Call mockFindUsersByUsername here
+    await mockEditUsers(username, userData); // Call mockEditUsers
+    return Promise.resolve(userData); // Return a promise
+  }),
+  getUser: jest.fn(async () => Promise.resolve(mockUser)), // Return a promise
+  getAllUsers: jest.fn(async () => Promise.resolve([mockUser])), // Return a promise
+  addSaldo: jest.fn(async (username, userData) => {
+    const result = await mockAddSaldo(userData, username); // Call mockAddSaldo here
+    return Promise.resolve(result); // Return a promise
+  }),
   generateTokens: jest.fn(() => ({
     accessToken: "test-token",
     refreshToken: "test-refresh-token",
