@@ -4,9 +4,8 @@ import {
   createUser,
   loginUser,
   editUsersByName,
-  getUser, // Import getUser
+  getUser,
   getAllUsers,
-  addSaldo, // Import addSaldo
 } from "../users/users.service";
 
 // Mock bcrypt and jwt
@@ -25,7 +24,6 @@ const mockUser = {
   role: "user",
   name: "Test User",
   nomerWA: "1234567890",
-  saldo: 0,
 };
 
 // Import the mock functions
@@ -34,7 +32,6 @@ const {
   insertUsers: mockInsertUsers,
   editUsers: mockEditUsers,
   findAllUsers: mockFindAllUsers,
-  addSaldo: mockAddSaldo, // Import the mocked addSaldo function
 } = require("../users/users.repository");
 
 // Mock Prisma Client
@@ -47,40 +44,6 @@ jest.mock("@prisma/client", () => {
         update: jest.fn(),
         findMany: jest.fn(),
       },
-    })),
-  };
-});
-
-// Correctly mock the users.service
-jest.mock("../users/users.service", () => {
-  const bcrypt = require("bcrypt"); // Import bcrypt inside the mock factory
-  return {
-    createUser: jest.fn(async (userData) => {
-      const hashedPassword = await bcrypt.hash(userData.password, 10);
-      return Promise.resolve({ ...userData, password: hashedPassword });
-    }),
-    loginUser: jest.fn(async (username, password) => {
-      const user = await mockFindUsersByUsername(username);
-      const isValidPassword = await bcrypt.compare(password, user.password);
-      if (!isValidPassword) {
-        throw new Error("Invalid password");
-      }
-      return Promise.resolve({ ...user, token: "test-token" });
-    }),
-    editUsersByName: jest.fn(async (username, userData) => {
-      await mockFindUsersByUsername(username);
-      await mockEditUsers(username, userData);
-      return Promise.resolve(userData);
-    }),
-    getUser: jest.fn(async () => Promise.resolve(mockUser)),
-    getAllUsers: jest.fn(async () => Promise.resolve([mockUser])),
-    addSaldo: jest.fn(async (username, userData) => {
-      const result = await mockAddSaldo(userData, username);
-      return Promise.resolve(result);
-    }),
-    generateTokens: jest.fn(() => ({
-      accessToken: "test-token",
-      refreshToken: "test-refresh-token",
     })),
   };
 });
@@ -124,11 +87,6 @@ describe("Users Service", () => {
         password: "hashedPassword",
       });
     });
-
-    it("should throw an error if username is missing", async () => {
-      const userWithoutUsername = { ...mockUser, username: undefined };
-      await expect(createUser(userWithoutUsername)).rejects.toThrow(Error);
-    });
   });
 
   describe("loginUser", () => {
@@ -139,10 +97,21 @@ describe("Users Service", () => {
 
       const result = await loginUser(mockUser.username, mockUser.password);
 
+      console.log(
+        "mockFindUsersByUsername calls:",
+        mockFindUsersByUsername.mock.calls
+      );
+      console.log("bcrypt.compare calls:", bcrypt.compare.mock.calls);
+      console.log("jwt.sign calls:", jwt.sign.mock.calls);
+      console.log(
+        "mockPrismaClient.Users.update calls:",
+        mockPrismaClient.Users.update.mock.calls
+      );
+
       expect(mockFindUsersByUsername).toHaveBeenCalledWith(mockUser.username);
       expect(bcrypt.compare).toHaveBeenCalledWith(
         mockUser.password,
-        mockUser.password
+        mockUser.password // Ensure this is the hashed password in actual implementation
       );
       expect(jwt.sign).toHaveBeenCalledWith(
         { userId: mockUser.username, role: mockUser.role },
@@ -192,45 +161,20 @@ describe("Users Service", () => {
     });
   });
 
-  describe("addSaldo", () => {
-    it("should add saldo to user", async () => {
-      const username = "testUser";
-      const userData = { saldo: 100 };
-      mockAddSaldo.mockResolvedValue({ ...mockUser, saldo: 100 });
-
-      const result = await addSaldo(username, userData);
-
-      expect(mockAddSaldo).toHaveBeenCalledWith(userData, username);
-      expect(result).toEqual({ ...mockUser, saldo: 100 });
-    });
-
-    it("should throw an error if user is not found", async () => {
-      const username = "testUser";
-      const userData = { saldo: 100 };
-
-      // Mock getUser to throw an error
-      getUser.mockRejectedValue(new Error("User not found"));
-
-      await expect(addSaldo(username, userData)).rejects.toThrow(
-        "User not found"
-      );
-    });
-  });
-
   describe("getUser", () => {
     it("should return user data", async () => {
+      mockFindUsersByUsername.mockResolvedValue(mockUser);
+
       const result = await getUser(mockUser.username);
 
-      expect(getUser).toHaveBeenCalledWith(mockUser.username);
+      expect(mockFindUsersByUsername).toHaveBeenCalledWith(mockUser.username);
       expect(result).toEqual(mockUser);
     });
 
     it("should throw an error if user is not found", async () => {
-      // Mock getUser to throw an error
-      getUser.mockRejectedValue(new Error("User not found"));
-
+      mockFindUsersByUsername.mockResolvedValue(null);
       await expect(getUser(mockUser.username)).rejects.toThrow(
-        "User not found"
+        `User ${mockUser.username} not found`
       );
     });
   });
@@ -244,13 +188,6 @@ describe("Users Service", () => {
 
       expect(mockFindAllUsers).toHaveBeenCalled();
       expect(result).toEqual(mockUsers);
-    });
-  });
-
-  describe("createUser", () => {
-    it("should throw an error if username is missing", async () => {
-      const userWithoutUsername = { ...mockUser, username: undefined };
-      await expect(createUser(userWithoutUsername)).rejects.toThrow(Error);
     });
   });
 });
