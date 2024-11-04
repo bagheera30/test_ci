@@ -47,7 +47,12 @@ const loginUser = async (username, password) => {
     data: { token: refreshToken }, // Save refresh token in DB
   });
 
-  return { accessToken, refreshToken, role: user.role, username: user.username };
+  return {
+    accessToken,
+    refreshToken,
+    role: user.role,
+    username: user.username,
+  };
 };
 
 // Refresh access token
@@ -74,7 +79,6 @@ const refreshAccessToken = async (refreshToken) => {
   }
 };
 
-
 const editUsersByName = async (username, userData) => {
   await getUser(username);
   return await editUsers(username, userData);
@@ -88,4 +92,12 @@ const getUser = async (username) => {
   return user;
 };
 
-export { createUser, loginUser, editUsersByName, getUser, getAllUsers };
+export {
+  createUser,
+  loginUser,
+  editUsersByName,
+  getUser,
+  getAllUsers,
+  addSaldo,
+  refreshAccessToken,
+};
