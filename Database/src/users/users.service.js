@@ -41,7 +41,7 @@ const loginUser = async (username, password) => {
     throw new Error("Invalid password");
   }
 
-  const { accessToken, refreshToken } = generateTokens(user);
+  // const { accessToken, refreshToken } = generateTokens(user);
 
   await prisma.Users.update({
     where: { username: user.username },
@@ -57,28 +57,28 @@ const loginUser = async (username, password) => {
 };
 
 // Refresh access token
-const refreshAccessToken = async (refreshToken) => {
-  try {
-    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY);
-    const user = await findUsersByUsername(decoded.userId);
+// const refreshAccessToken = async (refreshToken) => {
+//   try {
+//     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY);
+//     const user = await findUsersByUsername(decoded.userId);
 
-    if (!user || user.token !== refreshToken) {
-      throw new Error("Invalid refresh token");
-    }
+//     if (!user || user.token !== refreshToken) {
+//       throw new Error("Invalid refresh token");
+//     }
 
-    const { accessToken, refreshToken: newRefreshToken } = generateTokens(user);
+//     const { accessToken, refreshToken: newRefreshToken } = generateTokens(user);
 
-    // Update refresh token in the database
-    await prisma.Users.update({
-      where: { username: user.username },
-      data: { token: newRefreshToken },
-    });
+//     // Update refresh token in the database
+//     await prisma.Users.update({
+//       where: { username: user.username },
+//       data: { token: newRefreshToken },
+//     });
 
-    return { accessToken, refreshToken: newRefreshToken };
-  } catch (error) {
-    throw new Error("Invalid or expired refresh token");
-  }
-};
+//     return { accessToken, refreshToken: newRefreshToken };
+//   } catch (error) {
+//     throw new Error("Invalid or expired refresh token");
+//   }
+// };
 
 const editUsersByName = async (username, userData) => {
   await getUser(username);
