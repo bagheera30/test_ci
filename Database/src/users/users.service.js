@@ -49,6 +49,7 @@ const loginUser = async (username, password) => {
   // });
 
   return {
+    token: accessToken,
     // accessToken,
     // refreshToken,
     role: user.role,
@@ -66,7 +67,7 @@ const loginUser = async (username, password) => {
 //       throw new Error("Invalid refresh token");
 //     }
 
-//     const { accessToken, refreshToken: newRefreshToken } = generateTokens(user);
+const { accessToken } = generateTokens(user);
 
 //     // Update refresh token in the database
 //     await prisma.Users.update({
