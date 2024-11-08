@@ -1,140 +1,174 @@
-// product.service.test.js
 const {
   getAllProducts,
   getProductById,
   createProduct,
   deleteProductById,
   editProductById,
-} = require("../product/product.service");
+  addFavoriteProduct,
+  getFavoriteProducts,
+  removeFavoriteProduct,
+  updateStock,
+} = require("./product.service");
 
-// Mock product repository functions
-jest.mock("../product/product.repository");
 const {
   findProducts,
   findProductById,
   insertProduct,
   deleteProduct,
   editProduct,
-} = require("../product/product.repository");
+} = require("./product.repository");
 
-// Mock product data
-const mockProduct = {
-  id: 1,
-  name: "Test Product",
-  price: 10.99,
-};
+// Mock repository functions
+jest.mock("./product.repository");
 
 describe("Product Service", () => {
   beforeEach(() => {
-    // Reset mocks before each test
-    findProducts.mockReset();
-    findProductById.mockReset();
-    insertProduct.mockReset();
-    deleteProduct.mockReset();
-    editProduct.mockReset();
+    jest.clearAllMocks();
   });
 
   describe("getAllProducts", () => {
-    it("should return all products", async () => {
-      // Arrange
-      const mockProducts = [mockProduct, { ...mockProduct, id: 2 }];
+    it("should return all products with pagination", async () => {
+      const mockProducts = [
+        { id: 1, name: "Product 1", stock: 100 },
+        { id: 2, name: "Product 2", stock: 50 },
+      ];
       findProducts.mockResolvedValue(mockProducts);
 
-      // Act
-      const result = await getAllProducts();
+      const result = await getAllProducts(1);
 
-      // Assert
-      expect(findProducts).toHaveBeenCalled();
-      expect(result).toEqual(mockProducts);
+      expect(findProducts).toHaveBeenCalledWith(10, 0); // Memeriksa pemanggilan dengan default limit
+      expect(result).toEqual(mockProducts); // Memeriksa hasil yang diharapkan
+    });
+
+    it("should return an empty array if no products found", async () => {
+      findProducts.mockResolvedValue([]);
+
+      const result = await getAllProducts(1);
+
+      expect(findProducts).toHaveBeenCalledWith(10, 0); // Memeriksa pemanggilan dengan default limit
+      expect(result).toEqual([]); // Memeriksa hasil yang diharapkan
     });
   });
 
   describe("getProductById", () => {
-    it("should return product by ID", async () => {
-      // Arrange
+    it("should return product details if found", async () => {
+      const mockProduct = { id: 1, name: "Product 1", stock: 100 };
       findProductById.mockResolvedValue(mockProduct);
 
-      // Act
-      const result = await getProductById(mockProduct.id);
+      const result = await getProductById(1);
 
-      // Assert
-      expect(findProductById).toHaveBeenCalledWith(mockProduct.id);
+      expect(findProductById).toHaveBeenCalledWith(1);
       expect(result).toEqual(mockProduct);
     });
 
     it("should throw an error if product is not found", async () => {
-      // Arrange
       findProductById.mockResolvedValue(null);
 
-      // Act & Assert
-      await expect(getProductById(mockProduct.id)).rejects.toThrow(
-        "Product not found"
-      );
+      await expect(getProductById(1)).rejects.toThrow("Product not found");
     });
   });
 
   describe("createProduct", () => {
     it("should create a new product", async () => {
-      // Arrange
+      const newProductData = { name: "New Product", stock: 100 };
+      const mockProduct = { id: 3, ...newProductData };
       insertProduct.mockResolvedValue(mockProduct);
 
-      // Act
-      const result = await createProduct(mockProduct);
+      const result = await createProduct(newProductData);
 
-      // Assert
-      expect(insertProduct).toHaveBeenCalledWith(mockProduct);
+      expect(insertProduct).toHaveBeenCalledWith(newProductData);
       expect(result).toEqual(mockProduct);
     });
   });
 
   describe("deleteProductById", () => {
-    it("should delete product by ID", async () => {
-      // Arrange
+    it("should delete a product by id", async () => {
+      const mockProduct = { id: 1, name: "Product 1" };
       findProductById.mockResolvedValue(mockProduct);
-      deleteProduct.mockResolvedValue(undefined);
 
-      // Act
-      await deleteProductById(mockProduct.id);
+      await deleteProductById(1);
 
-      // Assert
-      expect(findProductById).toHaveBeenCalledWith(mockProduct.id);
-      expect(deleteProduct).toHaveBeenCalledWith(mockProduct.id);
+      expect(findProductById).toHaveBeenCalledWith(1);
+      expect(deleteProduct).toHaveBeenCalledWith(1);
     });
 
-    it("should throw an error if product is not found", async () => {
-      // Arrange
+    it("should throw an error if product to delete is not found", async () => {
       findProductById.mockResolvedValue(null);
 
-      // Act & Assert
-      await expect(deleteProductById(mockProduct.id)).rejects.toThrow(
-        "Product not found"
-      );
+      await expect(deleteProductById(1)).rejects.toThrow("Product not found");
     });
   });
 
   describe("editProductById", () => {
-    it("should edit product by ID", async () => {
-      // Arrange
+    it("should edit a product", async () => {
+      const mockProduct = { id: 1, name: "Product 1", stock: 100 };
+      const updatedData = { name: "Updated Product" };
       findProductById.mockResolvedValue(mockProduct);
-      editProduct.mockResolvedValue(mockProduct);
+      editProduct.mockResolvedValue({ ...mockProduct, ...updatedData });
 
-      // Act
-      const result = await editProductById(mockProduct.id, mockProduct);
+      const result = await editProductById(1, updatedData);
 
-      // Assert
-      expect(findProductById).toHaveBeenCalledWith(mockProduct.id);
-      expect(editProduct).toHaveBeenCalledWith(mockProduct.id, mockProduct);
-      expect(result).toEqual(mockProduct);
+      expect(findProductById).toHaveBeenCalledWith(1);
+      expect(editProduct).toHaveBeenCalledWith(1, {
+        ...mockProduct,
+        ...updatedData,
+      });
+      expect(result).toEqual({ ...mockProduct, ...updatedData });
+    });
+  });
+
+  describe("updateStock", () => {
+    it("should update the stock of a product", async () => {
+      const mockProduct = { id: 1, name: "Product 1", stock: 100 };
+      findProductById.mockResolvedValue(mockProduct);
+      editProduct.mockResolvedValue({ ...mockProduct, stock: 120 });
+
+      const result = await updateStock(1, 20); // Menambah 20 stok
+
+      expect(findProductById).toHaveBeenCalledWith(1);
+      expect(editProduct).toHaveBeenCalledWith(1, {
+        ...mockProduct,
+        stock: 120,
+      });
+      expect(result).toEqual({ ...mockProduct, stock: 120 });
+    });
+  });
+
+  describe("Favorite Products", () => {
+    beforeEach(() => {
+      // Reset favoriteProducts before each test
+      global.favoriteProducts = [];
     });
 
-    it("should throw an error if product is not found", async () => {
-      // Arrange
-      findProductById.mockResolvedValue(null);
+    it("should add a product to favorites", () => {
+      addFavoriteProduct(1);
+      expect(global.favoriteProducts).toContain(1);
+    });
 
-      // Act & Assert
-      await expect(
-        editProductById(mockProduct.id, mockProduct)
-      ).rejects.toThrow("Product not found");
+    it("should not add a duplicate product to favorites", () => {
+      addFavoriteProduct(1);
+      addFavoriteProduct(1);
+      expect(global.favoriteProducts).toEqual([1]); // Harus tetap satu
+    });
+
+    it("should get favorite products", async () => {
+      const mockProduct = { id: 1, name: "Product 1", stock: 100 };
+      favoriteProducts.push(1);
+      findProducts.mockResolvedValue([mockProduct]);
+
+      const result = await getFavoriteProducts();
+
+      expect(result).toEqual([mockProduct]);
+    });
+
+    it("should remove a product from favorites", () => {
+      favoriteProducts.push(1);
+      removeFavoriteProduct(1);
+      expect(global.favoriteProducts).not.toContain(1);
+    });
+
+    it("should not throw error when removing a product that is not in favorites", () => {
+      expect(() => removeFavoriteProduct(1)).not.toThrow();
     });
   });
 });
