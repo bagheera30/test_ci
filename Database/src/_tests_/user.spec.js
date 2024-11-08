@@ -1,11 +1,12 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import {
-  createUser,
-  loginUser,
+  createUser ,
+  loginUser ,
   editUsersByName,
-  getUser,
+  getUser ,
   getAllUsers,
+  addSaldo // Import addSaldo here
 } from "../users/users.service";
 
 // Mock bcrypt and jwt
@@ -18,7 +19,7 @@ jest.mock("../users/users.repository");
 process.env.JWT_SECRET_KEY = "test-secret-key";
 
 // Mock user data
-const mockUser = {
+const mockUser  = {
   username: "testuser",
   password: "testpassword",
   role: "user",
@@ -33,7 +34,8 @@ const {
   insertUsers: mockInsertUsers,
   editUsers: mockEditUsers,
   findAllUsers: mockFindAllUsers,
-  addSaldo: mockAddSaldo = jest.fn(), // Ensure it's initialized
+  addSaldo: mockAddSaldo,
+  get:User  mockGetUser , // Mock getUser  here
 } = require("../users/users.repository");
 
 // Mock Prisma Client
@@ -160,7 +162,7 @@ describe("Users Service", () => {
       const userData = { saldo: 100 };
   
       const error = new Error("User  not found");
-      getUser .mockRejectedValue(error);
+      mockGetUser .mockRejectedValue(error); // Use mockGetUser  here
   
       await expect(addSaldo(username, userData)).rejects.toThrow(error);
     });
