@@ -79,8 +79,9 @@ const deleteUser = async (username) => {
 };
 const addSaldo = async (username, userData) => {
   const user = await getUser (username); 
-  return await addSaldo(username, userData); 
+  return await addSaldo(username, userData);
 };
+
 const updatePassword = async (username, newPassword) => {
   const user = await findUsersByUsername(username);
   if (!user) {
