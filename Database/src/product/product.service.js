@@ -6,8 +6,16 @@ const {
   editProduct,
 } = require("./product.repository");
 
-const getAllProducts = async () => {
-  const products = await findProducts();
+const getAllProducts = async (sortBy = 'name', order = 'asc') => {
+  let products = await findProducts();
+
+  products = products.sort((a, b) => {
+    if (sortBy === 'price'){  
+    return order === 'asc' ? a.price - b.price : b.price - a.price;
+  }
+  return order === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
+
+  });
 
   return products;
 };

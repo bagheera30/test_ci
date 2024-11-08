@@ -24,6 +24,12 @@ const mockProduct = {
   price: 10.99,
 };
 
+const mockProducts = [
+  { id: 1, name: "Banana", price: 200 },
+  { id: 2, name: "Apple", price: 150 },
+  { id: 3, name: "Cherry", price: 100 },
+];
+
 describe("Product Service", () => {
   beforeEach(() => {
     // Reset mocks before each test
@@ -35,17 +41,45 @@ describe("Product Service", () => {
   });
 
   describe("getAllProducts", () => {
-    it("should return all products", async () => {
-      // Arrange
-      const mockProducts = [mockProduct, { ...mockProduct, id: 2 }];
+    beforeEach(() => {
       findProducts.mockResolvedValue(mockProducts);
+    });
 
-      // Act
+    it("should return all products sorted by name in ascending order by default", async () => {
       const result = await getAllProducts();
-
-      // Assert
       expect(findProducts).toHaveBeenCalled();
-      expect(result).toEqual(mockProducts);
+      expect(result).toEqual([
+        { id: 2, name: "Apple", price: 150 },
+        { id: 1, name: "Banana", price: 200 },
+        { id: 3, name: "Cherry", price: 100 },
+      ]);
+    });
+
+    it("should return products sorted by name in descending order", async () => {
+      const result = await getAllProducts('name', 'desc');
+      expect(result).toEqual([
+        { id: 3, name: "Cherry", price: 100 },
+        { id: 1, name: "Banana", price: 200 },
+        { id: 2, name: "Apple", price: 150 },
+      ]);
+    });
+
+    it("should return products sorted by price in ascending order", async () => {
+      const result = await getAllProducts('price', 'asc');
+      expect(result).toEqual([
+        { id: 3, name: "Cherry", price: 100 },
+        { id: 2, name: "Apple", price: 150 },
+        { id: 1, name: "Banana", price: 200 },
+      ]);
+    });
+
+    it("should return products sorted by price in descending order", async () => {
+      const result = await getAllProducts('price', 'desc');
+      expect(result).toEqual([
+        { id: 1, name: "Banana", price: 200 },
+        { id: 2, name: "Apple", price: 150 },
+        { id: 3, name: "Cherry", price: 100 },
+      ]);
     });
   });
 
