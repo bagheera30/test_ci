@@ -16,16 +16,19 @@ const findUsersByUsername = async (username) => {
   });
   return user;
 };
-// In users.repository.js
-const addSaldo = async (username, saldo) => {
-  // Logic to update the user's saldo in the database
-  return await prisma.Users.update({
-    where: { username },
-    data: { saldo: { increment: saldo } }, // Assuming saldo is a numeric field
+const addSaldo = async (usersData, username) => {
+  const users = await prisma.Users.update({
+    where: {
+      username,
+    },
+    data: {
+      saldo: {
+        increment: usersData.saldo, // Correct spelling: "increment"
+      },
+    },
   });
+  return users;
 };
-
-
 
 const insertUsers = async (usersData) => {
   const users = await prisma.Users.create({
@@ -53,4 +56,9 @@ const editUsers = async (username, usersData) => {
   });
   return users;
 };
-export { findUsersByUsername, insertUsers, editUsers, findAllUsers, addSaldo };
+module.exports = {
+  findUsersByUsername,
+  insertUsers,
+  editUsers,
+  findAllUsers,
+};

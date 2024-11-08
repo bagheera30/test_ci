@@ -78,7 +78,7 @@ const deleteUser = async (username) => {
   return { message: `User ${username} has been deleted successfully` };
 };
 const addSaldo = async (username, userData) => {
-  const user = await getUser (username); 
+  await getUser(username);
   return await addSaldo(username, userData);
 };
 
