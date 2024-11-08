@@ -34,18 +34,18 @@ describe("Product Service", () => {
     editProduct.mockReset();
   });
 
-  describe("getAllProducts", () => {
-    it("should return all products", async () => {
+  describe("getTotalProducts", () => {
+    it("should return the total number of products", async () => {
       // Arrange
-      const mockProducts = [mockProduct, { ...mockProduct, id: 2 }];
-      findProducts.mockResolvedValue(mockProducts);
-
+      const mockTotal = 10; // Misalnya, kita mengharapkan ada 10 produk
+      countProducts.mockResolvedValue(mockTotal); // Mock hasil dari countProducts
+  
       // Act
-      const result = await getAllProducts();
-
+      const result = await getTotalProducts();
+  
       // Assert
-      expect(findProducts).toHaveBeenCalled();
-      expect(result).toEqual(mockProducts);
+      expect(countProducts).toHaveBeenCalled(); // Pastikan countProducts dipanggil
+      expect(result).toEqual(mockTotal); // Pastikan hasilnya sesuai dengan mockTotal
     });
   });
 

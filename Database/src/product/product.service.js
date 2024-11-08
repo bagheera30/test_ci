@@ -4,13 +4,13 @@ const {
   insertProduct,
   deleteProduct,
   editProduct,
+  countProducts, // Tambahan: Menambahkan fungsi countProducts untuk menghitung total produk
 } = require("./product.repository");
 
 // Menambahkan variabel untuk batas default produk yang ditampilkan
 const DEFAULT_PRODUCT_LIMIT = 100; // Misalnya, batas default untuk pengambilan produk
 
 const getAllProducts = async (page = 1, limit = DEFAULT_PRODUCT_LIMIT) => {
-
   const offset = (page - 1) * limit;
   const products = await findProducts(limit, offset); // Menggunakan limit dan offset
 
@@ -47,11 +47,18 @@ const editProductById = async (id, productData) => {
   return product;
 };
 
+// Tambahan: Fungsi untuk mendapatkan total jumlah produk
+const getTotalProducts = async () => {
+  const total = await countProducts();
+  return total;
+};
+
 module.exports = {
   getAllProducts,
   getProductById,
   createProduct,
   deleteProductById,
   editProductById,
+  getTotalProducts, // Tambahan: Ekspor fungsi baru
   DEFAULT_PRODUCT_LIMIT, // Menambahkan variabel ke ekspor
 };
