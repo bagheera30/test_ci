@@ -6,13 +6,13 @@ const {
   editProduct,
 } = require("./product.repository");
 
-// Menambahkan variabel untuk batas default produk yang ditampilkan
-const DEFAULT_PRODUCT_LIMIT = 100; // Misalnya, batas default untuk pengambilan produk
+const favoriteProducts = []; // Array untuk menyimpan ID produk favorit
 
-const getAllProducts = async (page = 1, limit = DEFAULT_PRODUCT_LIMIT) => {
+const DEFAULT_PRODUCT_LIMIT = 10; // Misalnya, batas produk default
 
-  const offset = (page - 1) * limit;
-  const products = await findProducts(limit, offset); // Menggunakan limit dan offset
+const getAllProducts = async (page = 1) => {
+  const offset = (page - 1) * DEFAULT_PRODUCT_LIMIT;
+  const products = await findProducts(DEFAULT_PRODUCT_LIMIT, offset);
 
   return products;
 };
@@ -29,22 +29,50 @@ const getProductById = async (id) => {
 
 const createProduct = async (newProductData) => {
   const product = await insertProduct(newProductData);
-
   return product;
 };
 
 const deleteProductById = async (id) => {
   await getProductById(id);
-
   await deleteProduct(id);
 };
 
 const editProductById = async (id, productData) => {
   await getProductById(id);
-
   const product = await editProduct(id, productData);
-
   return product;
+};
+
+const searchProducts = async (query) => {
+  const products = await findProducts();
+  return products.filter(product => 
+    product.name.toLowerCase().includes(query.toLowerCase())
+  );
+};
+
+const updateStock = async (id, quantity) => {
+  const product = await getProductById(id);
+  product.stock += quantity; // Update stok
+  await editProduct(id, product);
+  return product;
+};
+
+const addFavoriteProduct = (productId) => {
+  if (!favoriteProducts.includes(productId)) {
+    favoriteProducts.push(productId);
+  }
+};
+
+const getFavoriteProducts = async () => {
+  const products = await findProducts();
+  return products.filter(product => favoriteProducts.includes(product.id));
+};
+
+const removeFavoriteProduct = (productId) => {
+  const index = favoriteProducts.indexOf(productId);
+  if (index !== -1) {
+    favoriteProducts.splice(index, 1);
+  }
 };
 
 module.exports = {
@@ -53,5 +81,7 @@ module.exports = {
   createProduct,
   deleteProductById,
   editProductById,
-  DEFAULT_PRODUCT_LIMIT, // Menambahkan variabel ke ekspor
+  addFavoriteProduct,
+  getFavoriteProducts,
+  removeFavoriteProduct,
 };

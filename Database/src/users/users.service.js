@@ -6,7 +6,6 @@ import {
   insertUsers,
   editUsers,
   findAllUsers,
-  addSaldo, // Import from users.repository
 } from "./users.repository";
 
 const prisma = new PrismaClient();
@@ -24,10 +23,9 @@ const createUser = async (userData) => {
   return user;
 };
 
-// Renamed function
-const addSaldoToAccount = async (username, userData) => {
-  await getUser(username);
-  return await addSaldo(username, userData); // Use the imported addSaldo
+const notifyUsers = (product) => {
+  // Logika untuk mengirim notifikasi
+  console.log(`Notify users: New product added - ${product.name}`);
 };
 
 const loginUser = async (username, password) => {
@@ -41,44 +39,18 @@ const loginUser = async (username, password) => {
     throw new Error("Invalid password");
   }
 
-  // const { accessToken, refreshToken } = generateTokens(user);
+  const token = jwt.sign(
+    { userId: user.username, role: user.role },
+    process.env.JWT_SECRET_KEY
+  );
 
-  // await prisma.Users.update({
-  //   where: { username: user.username },
-  //   data: { token: refreshToken }, // Save refresh token in DB
-  // });
+  await prisma.Users.update({
+    where: { username: user.username },
+    data: { token },
+  });
 
-  return {
-    accessToken,
-    // refreshToken,
-    role: user.role,
-    username: user.username,
-  };
+  return { token, role: user.role, username: user.username };
 };
-
-// Refresh access token
-// const refreshAccessToken = async (refreshToken) => {
-//   try {
-//     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY);
-//     const user = await findUsersByUsername(decoded.userId);
-
-//     if (!user || user.token !== refreshToken) {
-//       throw new Error("Invalid refresh token");
-//     }
-
-//     const { accessToken, refreshToken: newRefreshToken } = generateTokens(user);
-
-//     // Update refresh token in the database
-//     await prisma.Users.update({
-//       where: { username: user.username },
-//       data: { token: newRefreshToken },
-//     });
-
-//     return { accessToken, refreshToken: newRefreshToken };
-//   } catch (error) {
-//     throw new Error("Invalid or expired refresh token");
-//   }
-// };
 
 const editUsersByName = async (username, userData) => {
   await getUser(username);
@@ -93,12 +65,41 @@ const getUser = async (username) => {
   return user;
 };
 
+const deleteUser = async (username) => {
+  const user = await findUsersByUsername(username);
+  if (!user) {
+    throw new Error(`User ${username} not found`);
+  }
+
+  await prisma.Users.delete({
+    where: { username: username },
+  });
+
+  return { message: `User ${username} has been deleted successfully` };
+};
+
+const updatePassword = async (username, newPassword) => {
+  const user = await findUsersByUsername(username);
+  if (!user) {
+    throw new Error(`User ${username} not found`);
+  }
+
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+  await prisma.Users.update({
+    where: { username: username },
+    data: { password: hashedPassword },
+  });
+
+  return { message: `Password for ${username} has been updated successfully` };
+};
+
+// TAMBAHAN: Ekspor fungsi updatePassword
 export {
   createUser,
   loginUser,
   editUsersByName,
   getUser,
   getAllUsers,
-  addSaldoToAccount, // Exported with the new name
-  // refreshAccessToken,
+  deleteUser,
+  updatePassword,
 };

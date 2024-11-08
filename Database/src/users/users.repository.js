@@ -29,19 +29,6 @@ const insertUsers = async (usersData) => {
   });
   return users;
 };
-const addSaldo = async (usersData, username) => {
-  const users = await prisma.Users.update({
-    where: {
-      username,
-    },
-    data: {
-      saldo: {
-        incremet: usersData.saldo,
-      },
-    },
-  });
-  return users;
-};
 const editUsers = async (username, usersData) => {
   const users = await prisma.Users.update({
     where: {
@@ -61,5 +48,4 @@ module.exports = {
   insertUsers,
   editUsers,
   findAllUsers,
-  addSaldo,
 };
