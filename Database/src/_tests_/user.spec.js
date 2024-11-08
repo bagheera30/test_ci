@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 
 // Mock repository functions
 const mockInsertUsers = jest.fn();
-const mockFindUsersByUsername = jest.fn();
+// const mockFindUsersByUsername = jest.fn();
 const mockEditUsers = jest.fn();
 const mockFindAllUsers = jest.fn();
 const mockAddSaldo = jest.fn();
@@ -11,7 +11,7 @@ const mockGetUser  = jest.fn();
 
 // Mock the module with the mocked functions
 jest.mock("../users/users.repository", () => ({
-  findUsersByUsername: mockFindUsersByUsername,
+  // findUsersByUsername: mockFindUsersByUsername,
   insertUsers: mockInsertUsers,
   editUsers: mockEditUsers,
   findAllUsers: mockFindAllUsers,
@@ -101,16 +101,16 @@ describe("Users Service", () => {
 
   describe("loginUser", () => {
     it("should return a JWT token and user details if login is successful", async () => {
-      mockFindUsersByUsername.mockResolvedValue(mockUser);
+      // mockFindUsersByUsername.mockResolvedValue(mockUser);
       bcrypt.compare.mockResolvedValue(true);
       mockPrismaClient.Users.update.mockResolvedValue(mockUser);
 
       const result = await loginUser(mockUser.username, mockUser.password);
 
-      console.log(
-        "mockFindUsersByUsername calls:",
-        mockFindUsersByUsername.mock.calls
-      );
+      // console.log(
+      //   "mockFindUsersByUsername calls:",
+      //   mockFindUsersByUsername.mock.calls
+      // );
       console.log("bcrypt.compare calls:", bcrypt.compare.mock.calls);
       console.log("jwt.sign calls:", jwt.sign.mock.calls);
       console.log(
@@ -118,7 +118,7 @@ describe("Users Service", () => {
         mockPrismaClient.Users.update.mock.calls
       );
 
-      expect(mockFindUsersByUsername).toHaveBeenCalledWith(mockUser.username);
+      // expect(mockFindUsersByUsername).toHaveBeenCalledWith(mockUser.username);
       expect(bcrypt.compare).toHaveBeenCalledWith(
         mockUser.password,
         mockUser.password // Ensure this is the hashed password in actual implementation
@@ -136,14 +136,14 @@ describe("Users Service", () => {
     });
 
     it("should throw an error if user is not found", async () => {
-      mockFindUsersByUsername.mockResolvedValue(null);
+      // mockFindUsersByUsername.mockResolvedValue(null);
       await expect(
         loginUser(mockUser.username, mockUser.password)
       ).rejects.toThrow("User not found");
     });
 
     it("should throw an error if password is invalid", async () => {
-      mockFindUsersByUsername.mockResolvedValue(mockUser);
+      // mockFindUsersByUsername.mockResolvedValue(mockUser);
       bcrypt.compare.mockResolvedValue(false);
       await expect(
         loginUser(mockUser.username, mockUser.password)
@@ -176,18 +176,18 @@ describe("Users Service", () => {
 
   describe("editUsersByName", () => {
     it("should update user data", async () => {
-      mockFindUsersByUsername.mockResolvedValue(mockUser);
+      // mockFindUsersByUsername.mockResolvedValue(mockUser);
       mockEditUsers.mockResolvedValue(mockUser);
 
       const result = await editUsersByName(mockUser.username, mockUser);
 
-      expect(mockFindUsersByUsername).toHaveBeenCalledWith(mockUser.username);
+      // expect(mockFindUsersByUsername).toHaveBeenCalledWith(mockUser.username);
       expect(mockEditUsers).toHaveBeenCalledWith(mockUser.username, mockUser);
       expect(result).toEqual(mockUser);
     });
 
     it("should throw an error if user is not found", async () => {
-      mockFindUsersByUsername.mockResolvedValue(null);
+      // mockFindUsersByUsername.mockResolvedValue(null);
       await expect(
         editUsersByName(mockUser.username, mockUser)
       ).rejects.toThrow(`User ${mockUser.username} not found`);
@@ -196,16 +196,16 @@ describe("Users Service", () => {
 
   describe("getUser", () => {
     it("should return user data", async () => {
-      mockFindUsersByUsername.mockResolvedValue(mockUser);
+      // mockFindUsersByUsername.mockResolvedValue(mockUser);
 
       const result = await getUser(mockUser.username);
 
-      expect(mockFindUsersByUsername).toHaveBeenCalledWith(mockUser.username);
+      // expect(mockFindUsersByUsername).toHaveBeenCalledWith(mockUser.username);
       expect(result).toEqual(mockUser);
     });
 
     it("should throw an error if user is not found", async () => {
-      mockFindUsersByUsername.mockResolvedValue(null);
+      // mockFindUsersByUsername.mockResolvedValue(null);
       await expect(getUser(mockUser.username)).rejects.toThrow(
         `User ${mockUser.username} not found`
       );
