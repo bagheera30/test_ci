@@ -6,7 +6,7 @@ import {
   insertUsers,
   editUsers,
   findAllUsers,
-} from "./users.repository";
+} from "../users/users.repository";
 
 const prisma = new PrismaClient();
 

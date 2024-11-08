@@ -8,7 +8,7 @@ const {
   getFavoriteProducts,
   removeFavoriteProduct,
   updateStock,
-} = require("./product.service");
+} = require("../product/product.service");
 
 const {
   findProducts,
@@ -16,7 +16,7 @@ const {
   insertProduct,
   deleteProduct,
   editProduct,
-} = require("./product.repository");
+} = require("../product/product.repository");
 
 // Mock repository functions
 jest.mock("./product.repository");
