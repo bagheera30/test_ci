@@ -28,15 +28,22 @@ const mockUser  = {
   saldo: 0,
 };
 
-// Import the mock functions
 // Mock repository functions
+const mockInsertUsers = jest.fn();
+const mockFindUsersByUsername = jest.fn();
+const mockEditUsers = jest.fn();
+const mockFindAllUsers = jest.fn();
+const mockAddSaldo = jest.fn();
+const mockGetUser  = jest.fn();
+
+// Mock the module with the mocked functions
 jest.mock("../users/users.repository", () => ({
-  findUsersByUsername: jest.fn(),
-  insertUsers: jest.fn(),
-  editUsers: jest.fn(),
-  findAllUsers: jest.fn(),
-  addSaldo: jest.fn(), // Ensure addSaldo is mocked
-  get: jest.fn(),      // Ensure get is mocked
+  findUsersByUsername: mockFindUsersByUsername,
+  insertUsers: mockInsertUsers,
+  editUsers: mockEditUsers,
+  findAllUsers: mockFindAllUsers,
+  addSaldo: mockAddSaldo,
+  get: jest.fn(), // Ensure get is mocked if used
 }));
 // Mock Prisma Client
 jest.mock("@prisma/client", () => {
@@ -71,24 +78,23 @@ describe("Users Service", () => {
     jwt.sign.mockReturnValue("test-token");
   });
 
-  describe("createUser", () => {
+  describe("createUser ", () => {
     it("should create a new user with hashed password", async () => {
       bcrypt.hash.mockResolvedValue("hashedPassword");
       mockInsertUsers.mockResolvedValue({
-        ...mockUser,
+        ...mockUser ,
         password: "hashedPassword",
       });
-
-
-      const result = await createUser(mockUser);
-
-      expect(bcrypt.hash).toHaveBeenCalledWith(mockUser.password, 10);
+  
+      const result = await createUser (mockUser );
+  
+      expect(bcrypt.hash).toHaveBeenCalledWith(mockUser .password, 10);
       expect(mockInsertUsers).toHaveBeenCalledWith({
-        ...mockUser,
+        ...mockUser ,
         password: "hashedPassword",
       });
       expect(result).toEqual({
-        ...mockUser,
+        ...mockUser ,
         password: "hashedPassword",
       });
     });
