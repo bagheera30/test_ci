@@ -129,6 +129,24 @@ describe("User  Service", () => {
     });
   });
 
+const { expect } = require("chai");
+const { prisma } = require("./prisma.client");
+const { deactivateUserAccount } = require("./users.service");
+describe("Deactivate User Account", () => {
+  it("should deactivate the user", async () => {
+    // Mocking findUnique dan update
+    prisma.Users.findUnique = async () => ({ username: "testUser", active: true });
+    prisma.Users.update = async (args) => ({ ...args.data, active: false });
+
+    await deactivateUserAccount("testUser");
+
+    const updatedUser = await prisma.Users.update({ where: { username: "testUser" }, data: { active: false } });
+
+    expect(updatedUser.active).to.be.false;
+  });
+});
+
+
   describe("getUser ", () => {
     it("should return a user by username", async () => {
       const username = "existingUser ";
