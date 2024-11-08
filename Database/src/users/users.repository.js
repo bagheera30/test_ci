@@ -1,64 +1,38 @@
-export {};
-const db = require("../libs/db");
+// users.repository.js
+import { prisma } from "@prisma/client"; // Assuming you have a Prisma client instance
 
-const prisma = db.getInstance();
-
-const findAllUsers = async () => {
-  const users = await prisma.users.findMany();
-  return users;
+export const findUsersByUsername = async (username) => {
+  return await prisma.Users.findUnique({ where: { username } });
 };
 
-const findUsersByUsername = async (username) => {
-  const user = await prisma.Users.findUnique({
-    where: {
-      username: username,
-    },
-  });
-  return user;
-};
-const addSaldo = async (usersData, username) => {
-  const users = await prisma.Users.update({
-    where: {
-      username,
-    },
-    data: {
-      saldo: {
-        increment: usersData.saldo, // Correct spelling: "increment"
-      },
-    },
-  });
-  return users;
+export const insertUsers = async (user) => {
+  return await prisma.Users.create({ data: user });
 };
 
-const insertUsers = async (usersData) => {
-  const users = await prisma.Users.create({
-    data: {
-      name: usersData.name,
-      username: usersData.username,
-      password: usersData.password,
-      nomerWA: usersData.nomerWA,
-      token: usersData.token,
-    },
+export const editUsers = async (username, userData) => {
+  return await prisma.Users.update({
+    where: { username },
+    data: userData,
   });
-  return users;
 };
-const editUsers = async (username, usersData) => {
-  const users = await prisma.Users.update({
-    where: {
-      username,
-    },
-    data: {
-      name: usersData.name,
-      username: usersData.username,
-      password: usersData.password,
-      nomerWA: usersData.nomerWA,
-    },
+
+export const findAllUsers = async () => {
+  return await prisma.Users.findMany();
+};
+
+export const addSaldo = async (username, userData) => {
+  // Implement the logic to add saldo for the user
+  const user = await findUsersByUsername(username);
+  if (!user) {
+    throw new Error("User  not found");
+  }
+  return await prisma.Users.update({
+    where: { username },
+    data: { saldo: user.saldo + userData.saldo },
   });
-  return users;
 };
-module.exports = {
-  findUsersByUsername,
-  insertUsers,
-  editUsers,
-  findAllUsers,
+
+// Export the get function
+export const get = async (username) => {
+  return await findUsersByUsername(username);
 };

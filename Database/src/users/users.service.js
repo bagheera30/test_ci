@@ -78,10 +78,9 @@ const deleteUser = async (username) => {
   return { message: `User ${username} has been deleted successfully` };
 };
 const addSaldo = async (username, userData) => {
-  await getUser(username);
-  return await addSaldo(username, userData);
+  const user = await getUser (username); 
+  return await addSaldo(username, userData); 
 };
-
 const updatePassword = async (username, newPassword) => {
   const user = await findUsersByUsername(username);
   if (!user) {

@@ -29,15 +29,15 @@ const mockUser  = {
 };
 
 // Import the mock functions
-const {
-  findUsersByUsername: mockFindUsersByUsername,
-  insertUsers: mockInsertUsers,
-  editUsers: mockEditUsers,
-  findAllUsers: mockFindAllUsers,
-  addSaldo: mockAddSaldo,
-  get:User  mockGetUser , // Mock getUser  here
-} = require("../users/users.repository");
-
+// Mock repository functions
+jest.mock("../users/users.repository", () => ({
+  findUsersByUsername: jest.fn(),
+  insertUsers: jest.fn(),
+  editUsers: jest.fn(),
+  findAllUsers: jest.fn(),
+  addSaldo: jest.fn(), // Ensure addSaldo is mocked
+  get: jest.fn(),      // Ensure get is mocked
+}));
 // Mock Prisma Client
 jest.mock("@prisma/client", () => {
   return {
