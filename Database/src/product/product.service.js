@@ -17,6 +17,8 @@ const getAllProducts = async (page = 1, limit = DEFAULT_PRODUCT_LIMIT) => {
   return products;
 };
 
+
+
 const getProductById = async (id) => {
   const product = await findProductById(id);
 
