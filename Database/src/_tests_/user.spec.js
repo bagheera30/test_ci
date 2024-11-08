@@ -35,7 +35,6 @@ const {
   editUsers: mockEditUsers,
   findAllUsers: mockFindAllUsers,
   addSaldo: mockAddSaldo,
-  get: mockGetUser ,
 } = require("../users/users.repository");
 
 // Mock Prisma Client
