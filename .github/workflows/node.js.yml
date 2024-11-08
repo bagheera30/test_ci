@@ -2,9 +2,9 @@ name: Node.js CI
 
 on:
   push:
-    branches: ["master"]
+    branches: ["primz"]
   pull_request:
-    branches: ["master"]
+    branches: ["primz"]
 
 jobs:
   build-client:
