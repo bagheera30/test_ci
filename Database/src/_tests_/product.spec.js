@@ -19,7 +19,7 @@ const {
 } = require("../product/product.repository");
 
 // Mock repository functions
-jest.mock("./product.repository");
+jest.mock("../product/product.repository");
 
 describe("Product Service", () => {
   beforeEach(() => {
