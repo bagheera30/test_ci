@@ -16,6 +16,19 @@ const findUsersByUsername = async (username) => {
   });
   return user;
 };
+const addSaldo = async (usersData, username) => {
+  const users = await prisma.Users.update({
+    where: {
+      username,
+    },
+    data: {
+      saldo: {
+        increment: usersData.saldo, // Correct spelling: "increment"
+      },
+    },
+  });
+  return users;
+};
 
 const insertUsers = async (usersData) => {
   const users = await prisma.Users.create({
