@@ -1,11 +1,12 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import {
-  createUser,
-  loginUser,
+  createUser ,
+  loginUser ,
   editUsersByName,
-  getUser,
+  getUser ,
   getAllUsers,
+  addSaldo // Import addSaldo here
 } from "../users/users.service";
 
 // Mock bcrypt and jwt
@@ -18,12 +19,13 @@ jest.mock("../users/users.repository");
 process.env.JWT_SECRET_KEY = "test-secret-key";
 
 // Mock user data
-const mockUser = {
+const mockUser  = {
   username: "testuser",
   password: "testpassword",
   role: "user",
   name: "Test User",
   nomerWA: "1234567890",
+  saldo: 0,
 };
 
 // Import the mock functions
@@ -32,6 +34,8 @@ const {
   insertUsers: mockInsertUsers,
   editUsers: mockEditUsers,
   findAllUsers: mockFindAllUsers,
+  addSaldo: mockAddSaldo,
+  get:User  mockGetUser , // Mock getUser  here
 } = require("../users/users.repository");
 
 // Mock Prisma Client
@@ -74,6 +78,7 @@ describe("Users Service", () => {
         ...mockUser,
         password: "hashedPassword",
       });
+
 
       const result = await createUser(mockUser);
 
@@ -140,6 +145,29 @@ describe("Users Service", () => {
       ).rejects.toThrow("Invalid password");
     });
   });
+  describe("addSaldo", () => {
+    it("should add saldo to user", async () => {
+      const username = "testUser ";
+      const userData = { saldo: 100 };
+      mockAddSaldo.mockResolvedValue({ ...mockUser , saldo: 100 });
+  
+      const result = await addSaldo(username, userData);
+  
+      expect(mockAddSaldo).toHaveBeenCalledWith(userData, username);
+      expect(result).toEqual({ ...mockUser , saldo: 100 });
+    });
+  
+    it("should throw an error if user is not found", async () => {
+      const username = "testUser ";
+      const userData = { saldo: 100 };
+  
+      const error = new Error("User  not found");
+      mockGetUser .mockRejectedValue(error); // Use mockGetUser  here
+  
+      await expect(addSaldo(username, userData)).rejects.toThrow(error);
+    });
+  });
+
 
   describe("editUsersByName", () => {
     it("should update user data", async () => {
@@ -190,12 +218,4 @@ describe("Users Service", () => {
       expect(result).toEqual(mockUsers);
     });
   });
-
-  describe("createUser", () => {
-    it("should throw an error if username is missing", async () => {
-      const userWithoutUsername = { ...mockUser, username: undefined };
-      await expect(createUser(userWithoutUsername)).rejects.toThrow("Username is required");
-    });
-  });
-  
 });

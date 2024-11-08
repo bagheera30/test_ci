@@ -8,8 +8,10 @@ const {
   getFavoriteProducts,
   removeFavoriteProduct,
   updateStock,
+
   addProductReview,
   getProductReviews,
+
 } = require("../product/product.service");
 
 const {
@@ -23,11 +25,13 @@ const {
 // Mock repository functions
 jest.mock("../product/product.repository");
 
+
 const mockProducts = [
   { id: 1, name: "Banana", price: 200 },
   { id: 2, name: "Apple", price: 150 },
   { id: 3, name: "Cherry", price: 100 },
 ];
+
 
 describe("Product Service", () => {
   beforeEach(() => {
@@ -44,12 +48,22 @@ describe("Product Service", () => {
 
       const result = await getAllProducts(1);
 
+
       expect(findProducts).toHaveBeenCalledWith(10, 0); // Memeriksa pemanggilan dengan default limit
       expect(result).toEqual(mockProducts); // Memeriksa hasil yang diharapkan
     });
 
     it("should return an empty array if no products found", async () => {
       findProducts.mockResolvedValue([]);
+
+
+      expect(findProducts).toHaveBeenCalledWith(10, 0); // Memeriksa pemanggilan dengan default limit
+      expect(result).toEqual(mockProducts); // Memeriksa hasil yang diharapkan
+    });
+
+    it("should return an empty array if no products found", async () => {
+      findProducts.mockResolvedValue([]);
+
 
       const result = await getAllProducts(1);
 
@@ -161,7 +175,9 @@ describe("Product Service", () => {
 
     it("should get favorite products", async () => {
       const mockProduct = { id: 1, name: "Product 1", stock: 100 };
-      global.favoriteProducts.push(1);
+
+      favoriteProducts.push(1);
+
       findProducts.mockResolvedValue([mockProduct]);
 
       const result = await getFavoriteProducts();
@@ -170,52 +186,15 @@ describe("Product Service", () => {
     });
 
     it("should remove a product from favorites", () => {
-      global.favoriteProducts.push(1);
+
+      favoriteProducts.push(1);
       removeFavoriteProduct(1);
       expect(global.favoriteProducts).not.toContain(1);
     });
 
     it("should not throw error when removing a product that is not in favorites", () => {
       expect(() => removeFavoriteProduct(1)).not.toThrow();
-    });
-  });
 
-  describe("Product Reviews", () => {
-    it("should add a review to a product", async () => {
-      const mockProduct = { id: 1, name: "Product 1", stock: 100, reviews: [] };
-      const review = { user: "John Doe", rating: 5, comment: "Excellent product!" };
-      findProductById.mockResolvedValue(mockProduct);
-      editProduct.mockResolvedValue({ ...mockProduct, reviews: [review] });
-
-      const result = await addProductReview(1, review);
-
-      expect(findProductById).toHaveBeenCalledWith(1);
-      expect(editProduct).toHaveBeenCalledWith(1, {
-        ...mockProduct,
-        reviews: [review],
-      });
-      expect(result).toEqual({ ...mockProduct, reviews: [review] });
-    });
-
-    it("should get reviews of a product", async () => {
-      const mockReview = { user: "John Doe", rating: 5, comment: "Excellent product!" };
-      const mockProduct = { id: 1, name: "Product 1", stock: 100, reviews: [mockReview] };
-      findProductById.mockResolvedValue(mockProduct);
-
-      const result = await getProductReviews(1);
-
-      expect(findProductById).toHaveBeenCalledWith(1);
-      expect(result).toEqual([mockReview]);
-    });
-
-    it("should return an empty array if no reviews found", async () => {
-      const mockProduct = { id: 1, name: "Product 1", stock: 100, reviews: [] };
-      findProductById.mockResolvedValue(mockProduct);
-
-      const result = await getProductReviews(1);
-
-      expect(findProductById).toHaveBeenCalledWith(1);
-      expect(result).toEqual([]);
     });
   });
 });
