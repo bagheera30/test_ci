@@ -8,6 +8,10 @@ const {
   getFavoriteProducts,
   removeFavoriteProduct,
   updateStock,
+
+  addProductReview,
+  getProductReviews,
+
 } = require("../product/product.service");
 
 const {
@@ -20,6 +24,14 @@ const {
 
 // Mock repository functions
 jest.mock("../product/product.repository");
+
+
+const mockProducts = [
+  { id: 1, name: "Banana", price: 200 },
+  { id: 2, name: "Apple", price: 150 },
+  { id: 3, name: "Cherry", price: 100 },
+];
+
 
 describe("Product Service", () => {
   beforeEach(() => {
@@ -36,12 +48,22 @@ describe("Product Service", () => {
 
       const result = await getAllProducts(1);
 
+
       expect(findProducts).toHaveBeenCalledWith(10, 0); // Memeriksa pemanggilan dengan default limit
       expect(result).toEqual(mockProducts); // Memeriksa hasil yang diharapkan
     });
 
     it("should return an empty array if no products found", async () => {
       findProducts.mockResolvedValue([]);
+
+
+      expect(findProducts).toHaveBeenCalledWith(10, 0); // Memeriksa pemanggilan dengan default limit
+      expect(result).toEqual(mockProducts); // Memeriksa hasil yang diharapkan
+    });
+
+    it("should return an empty array if no products found", async () => {
+      findProducts.mockResolvedValue([]);
+
 
       const result = await getAllProducts(1);
 
@@ -153,7 +175,9 @@ describe("Product Service", () => {
 
     it("should get favorite products", async () => {
       const mockProduct = { id: 1, name: "Product 1", stock: 100 };
+
       favoriteProducts.push(1);
+
       findProducts.mockResolvedValue([mockProduct]);
 
       const result = await getFavoriteProducts();
@@ -162,6 +186,7 @@ describe("Product Service", () => {
     });
 
     it("should remove a product from favorites", () => {
+
       favoriteProducts.push(1);
       removeFavoriteProduct(1);
       expect(global.favoriteProducts).not.toContain(1);
@@ -169,6 +194,7 @@ describe("Product Service", () => {
 
     it("should not throw error when removing a product that is not in favorites", () => {
       expect(() => removeFavoriteProduct(1)).not.toThrow();
+
     });
   });
 });

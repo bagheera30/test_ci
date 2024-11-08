@@ -43,12 +43,14 @@ const editProductById = async (id, productData) => {
   return product;
 };
 
+
 const searchProducts = async (query) => {
   const products = await findProducts();
   return products.filter(product => 
     product.name.toLowerCase().includes(query.toLowerCase())
   );
 };
+
 
 const updateStock = async (id, quantity) => {
   const product = await getProductById(id);
@@ -75,6 +77,23 @@ const removeFavoriteProduct = (productId) => {
   }
 };
 
+
+const addProductReview = async (productId, review) => {
+  const product = await getProductById(productId);
+  if (!product.reviews) {
+    product.reviews = [];
+  }
+  product.reviews.push(review);
+  await editProduct(productId, product);
+  return product;
+};
+
+const getProductReviews = async (productId) => {
+  const product = await getProductById(productId);
+  return product.reviews || [];
+};
+
+
 module.exports = {
   getAllProducts,
   getProductById,
@@ -84,4 +103,8 @@ module.exports = {
   addFavoriteProduct,
   getFavoriteProducts,
   removeFavoriteProduct,
+
+  updateStock,
+  addProductReview,
+  getProductReviews,
 };

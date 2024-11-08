@@ -2,9 +2,11 @@ name: Node.js CI
 
 on:
   push:
-    branches: ["Nadhifa"]
+
+    branches: ["master"]
   pull_request:
-    branches: ["Nadhifa"]
+    branches: ["master"]
+
 
 jobs:
   build-client:
