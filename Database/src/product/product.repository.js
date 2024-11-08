@@ -66,10 +66,16 @@ const editProduct = async (id, productData) => {
   return product;
 };
 
+const countProducts = async () => {
+  const count = await prisma.Products.count(); // Menghitung jumlah total produk
+  return count;
+};
+
 module.exports = {
   findProducts,
   findProductById,
   insertProduct,
   deleteProduct,
   editProduct,
+  countProducts,
 };
