@@ -53,10 +53,4 @@ const editUsers = async (username, usersData) => {
   });
   return users;
 };
-module.exports = {
-  findUsersByUsername,
-  insertUsers,
-  editUsers,
-  findAllUsers,
-  addSaldo,
-};
+export { findUsersByUsername, insertUsers, editUsers, findAllUsers, addSaldo };
