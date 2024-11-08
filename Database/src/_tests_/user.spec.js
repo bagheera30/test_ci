@@ -6,27 +6,12 @@ import {
   editUsersByName,
   getUser ,
   getAllUsers,
-  addSaldo // Import addSaldo here
+  addSaldo,
 } from "../users/users.service";
 
 // Mock bcrypt and jwt
 jest.mock("bcrypt");
 jest.mock("jsonwebtoken");
-
-// Mock repository functions
-jest.mock("../users/users.repository");
-
-process.env.JWT_SECRET_KEY = "test-secret-key";
-
-// Mock user data
-const mockUser  = {
-  username: "testuser",
-  password: "testpassword",
-  role: "user",
-  name: "Test User",
-  nomerWA: "1234567890",
-  saldo: 0,
-};
 
 // Mock repository functions
 const mockInsertUsers = jest.fn();
@@ -45,6 +30,19 @@ jest.mock("../users/users.repository", () => ({
   addSaldo: mockAddSaldo,
   get: jest.fn(), // Ensure get is mocked if used
 }));
+
+process.env.JWT_SECRET_KEY = "test-secret-key";
+
+// Mock user data
+const mockUser  = {
+  username: "testuser",
+  password: "testpassword",
+  role: "user",
+  name: "Test User",
+  nomerWA: "1234567890",
+  saldo: 0,
+};
+
 // Mock Prisma Client
 jest.mock("@prisma/client", () => {
   return {
