@@ -1,17 +1,5 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import {
-  createUser ,
-  loginUser ,
-  editUsersByName,
-  getUser ,
-  getAllUsers,
-  addSaldo,
-} from "../users/users.service";
-
-// Mock bcrypt and jwt
-jest.mock("bcrypt");
-jest.mock("jsonwebtoken");
 
 // Mock repository functions
 const mockInsertUsers = jest.fn();
@@ -30,6 +18,19 @@ jest.mock("../users/users.repository", () => ({
   addSaldo: mockAddSaldo,
   get: jest.fn(), // Ensure get is mocked if used
 }));
+
+import {
+  createUser ,
+  loginUser ,
+  editUsersByName,
+  getUser ,
+  getAllUsers,
+  addSaldo,
+} from "../users/users.service";
+
+// Mock bcrypt and jwt
+jest.mock("bcrypt");
+jest.mock("jsonwebtoken");
 
 process.env.JWT_SECRET_KEY = "test-secret-key";
 
@@ -83,9 +84,9 @@ describe("Users Service", () => {
         ...mockUser ,
         password: "hashedPassword",
       });
-  
+
       const result = await createUser (mockUser );
-  
+
       expect(bcrypt.hash).toHaveBeenCalledWith(mockUser .password, 10);
       expect(mockInsertUsers).toHaveBeenCalledWith({
         ...mockUser ,
