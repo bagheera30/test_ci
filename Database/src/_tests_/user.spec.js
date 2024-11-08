@@ -1,12 +1,16 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
+
 const {
+
   findUsersByUsername,
   insertUsers,
   editUsers,
   findAllUsers,
+
 } = require("./users.repository");
+
 
 const prisma = new PrismaClient();
 
